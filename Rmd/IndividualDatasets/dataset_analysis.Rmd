@@ -1,0 +1,176 @@
+---
+author: "Hector Roux de Bézieux"
+date: '`r format(Sys.time(), "%d %B , %Y")`'
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    code_download: TRUE
+    
+params:
+  dataset: SMARTer_nuclei_MOp 
+  title: "Analysis of the SMARTer_nuclei_MOp dataset"
+---
+---
+title: `r params$title`
+---
+
+```{r load packages, include=F}
+library(knitr)
+opts_chunk$set(
+  fig.pos = "!h", out.extra = "", warning = F, message = F,
+  fig.width = 5, fig.align = "center", echo = F
+)
+libs <- c("here", "dplyr", "ggplot2", "tidyr", "stringr", "readr", "cowplot",
+          "clusterExperiment", "mclust", "RColorBrewer", "progress", "Dune",
+          "png")
+suppressMessages(
+  suppressWarnings(sapply(libs, require, character.only = TRUE))
+)
+rm(libs)
+type <- function(dataset) {
+  if (str_detect(dataset, "SMART")) return("Smart-Seq")
+  if (str_detect(dataset, "10x")) return("10X")
+  stop("Type unknown")
+}
+type <- type(params$dataset)
+mergers <- readRDS(here("data", "Dune",
+                                 paste0(params$dataset, "_mergers.rds")))
+```
+
+# EDA
+
+We can first visualize the data after dimension reduction with zinbWave. We then use t-SNE and color the cells with the allen labels. Since we use various values for the k parameter, we plot two representations with the most extreme values of k.
+
+```{r t-SNE plots, fig.width=18, fig.height=9}
+plots <- list.files(here("Figures", "EDA"))
+plots <- plots[str_detect(plots, params$dataset)]
+plots <- plots[str_detect(plots, "png")]
+plot.new()
+plot.window(0:1, 0:1)
+rasterImage(readPNG(here("Figures", "EDA", plots[1])), 0, 0, .5, 1)
+rasterImage(readPNG(here("Figures", "EDA", plots[length(plots)])), 0.5, 0, 1, 1)
+```
+
+
+# General comments
+
+We have the following workflow
+
+```{r workflow, fig.height=6, fig.width=10}
+plot.new()
+plot.window(0:1, 0:1)
+rasterImage(readPNG(here("Figures", "Workflow", "Workflow.png")),
+            0, 0, 1, 1)
+```
+
+In the Seurat clustering, there are two parameters to choose from: the resolution and the k.param (use in a knn step). From the seurat help file, for the resolution parameter: use a value above (below) 1.0 if you want to obtain a larger (smaller) number of communities.
+
+We picked a value of 1.6 as we want many clusters to start with. We also pick k = 50. Those values seem intermediate in term of ARI with other pairs of paramters (see section Seurat ARI param)
+
+We also consider two ways of computing the ARI between RSEC and other methods. Either, we force RSEC to assign all cells to a given cluster, or we only compute the ARI between RSEC and the other methods on those cells that RSEC do cluster. Note that in the second case, other pairs of methods are compared using all cells. We denote as RsecT the cluster assignement where all cells are assigned (i.e Rsec Total). 
+
+The ARI merging method works as follow. We iterate over all pairs of clusters for every clustering method. For each pair, we try to merge the two clusters and see how it improves the ARI with the other methods. We then merge the pair that improves the ARI the most. We stop when the ARI cannot be improved anymore.
+
+In the general case, we perform the ARI merging without the allen labels and we then use it as a comparison. A quick overview of how the algorithm performs with the allen labels is seen at the end.
+
+# Reduction in the number of clusters
+
+```{r Imp no allen}
+plotPrePost(mergers)
+```
+
+# Improvement in ARI
+
+```{r ARI imp no allen cell}
+plot_grid(
+  plotARIs(mergers$initialMat) + ggtitle("Before merging"),
+  plotARIs(mergers$currentMat) + ggtitle("After merging")
+)
+```
+
+
+```{r ARI trend, fig.width=9}
+ARItrend(merger = mergers)
+```
+
+# Comparison with Allen subclass
+
+## After ARI merging
+
+```{r comp cell}
+allen_clusters <- read.csv(here("data", type,
+                                paste0(params$dataset, "_cluster.membership.csv")),
+                           col.names = c("cells", "cluster_id"))
+clusters <- read.csv(here("data", type,
+                          paste0(params$dataset, "_cluster.annotation.csv")),
+                     header = T)
+allen_clusters <- full_join(allen_clusters, clusters)
+rm(clusters)
+
+apply(mergers$currentMat, 2, function(x) {
+    inds <- x != -1
+    xa <- x[inds]
+    y <- allen_clusters$subclass_label[inds]
+    mclust::adjustedRandIndex(xa, y)
+}) %>% data.frame(ARI = round(., 2)) %>%
+  select(ARI)
+```
+
+## After a last consensus step
+
+```{r final consensus}
+clusters <- mergers$currentMat
+r <- which(colnames(clusters) == "RsecT")
+if (all.equal(integer(0) ,r) != TRUE) {
+  clusters[,"Rsec"] <- assignRsec(mergers) 
+}
+clusters <- as.matrix(clusters) 
+
+cellsConsensus <- Consensus(clusMat = clusters,
+                            large = (type != "Smart-Seq"))
+consensus <- cbind(cellsConsensus,
+                   allen_clusters$subclass_label,
+                   clusters)
+
+colnames(consensus)[c(1, 2)] <- c("Consensus", "Allen\nsubclass")
+plotClusters(object = consensus)
+title("Consensus Merging with proportion\nand comparison with the allen subclass.")
+
+rm(clusters, cellsConsensus, consensus)
+```
+
+## Stopping during the merging
+
+```{r consensus with intermediate}
+midMat <- intermediateMat(merger = mergers,
+                          p = .9)
+r <- which(colnames(midMat) == "RsecT")
+if (all.equal(integer(0) ,r) != TRUE) {
+  midMat[,"Rsec"] <- assignRsec(mergers, p = .9)
+}
+midMat <- as.matrix(midMat)
+
+cellsConsensus <- Consensus(clusMat = midMat,
+                            large = (type != "Smart-Seq"))
+consensus <- cbind(cellsConsensus,
+                   allen_clusters$subclass_label,
+                   midMat) %>% as.data.frame()
+
+colnames(consensus)[c(1, 2)] <- c("Consensus", "Allen\nsubclass")
+plotClusters(object = consensus %>% as.matrix())
+title("Consensus Merging when stopping early")
+
+rm(cellsConsensus, consensus, midMat)
+```
+
+# Seurat ARI Param
+
+```{r seurat param}
+plot.new()
+plot.window(0:1, 0:1)
+rasterImage(readPNG(
+  here("Figures", type, paste0(params$dataset, "_seurat_ARI.png"))),
+  0, 0, 1, 1)
+```

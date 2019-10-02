@@ -1,0 +1,151 @@
+---
+title: "Plots for hierachical merging versus Dune"
+author: "Hector Roux de Bézieux"
+date: '`r format(Sys.time(), "%d %B , %Y")`'
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+---
+
+Rename the param as theta to avoid confusion
+
+```{r packages, include=F}
+library(knitr)
+opts_chunk$set(
+  fig.pos = "!h", out.extra = "", warning = F, message = F,
+  fig.align = "center", echo = F
+)
+libs <- c("here", "tidyverse", "DailyHRB")
+suppressMessages(
+  suppressWarnings(sapply(libs, require, character.only = TRUE))
+)
+rm(libs)
+```
+
+We have compared three possible starting points for merging the clusters, either based on a tree, or based on our own ARI merging, scenarii A, B and C.
+
+```{r}
+toRank <- function(i) {
+  case_when(
+    i == "Initial" ~ 1,
+    i == 33 ~ 2,
+    i == 66 ~ 3,
+    i == 90 ~ 4,
+    i == "Final" ~ 5
+  )
+}
+
+load_Dune <- function(method) {
+  df <- read.table(here("data", "Replicability", "Dune_Smart", method,
+                        "consensus_cluster_replicability.txt"))
+  df <- df %>% filter(!str_detect(clustering_method, "Consensus")) %>%
+    mutate(nb_clusters = replicable_clusters + non_replicable_clusters)
+  df$level <- lapply(df$level, toRank) %>% unlist()
+  df$level <- as.numeric(df$level)
+  return(df)
+}
+
+load_tree <- function(method) {
+  df <- read.table(here("data", "Replicability", "SingleTree", method,
+                        "consensus_cluster_replicability.txt"))
+  df <- df %>% filter(!str_detect(clustering_method, "Consensus")) %>%
+    mutate(nb_clusters = replicable_clusters + non_replicable_clusters,
+           level = str_remove(clustering_method, "^.*\\."),
+           level = if_else(nchar(level) == 1, paste0(level, "0"), level),
+           level = as.numeric(level))
+  return(df)
+}
+
+load_single_method <- function(method) {
+  df <- bind_rows("Dune" = load_Dune(method = method),
+                  Hierarchical = load_tree(method = method),
+                  .id = "Method") %>%
+    arrange(level) %>%
+    mutate(clustering_method = str_remove_all(clustering_method, "\\..*$"))
+  return(df)
+}
+
+plotComp <- function(method) {
+  df <- load_single_method(method = method)
+  linetypes <- c("solid", "dotted")
+  names(linetypes) <- c("Dune", "Hierarchical")
+
+  p <- ggplot(df,
+              aes(x = nb_clusters / 2,
+                  y = fraction_replicable_cells,
+                  col = clustering_method,
+                  linetype = Method,
+                  group = interaction(clustering_method, Method),
+                  label = level)) +
+    geom_path(size = 1.8) +
+    my_theme() +
+    scale_linetype_manual(values = linetypes) +
+    scale_color_brewer(type = "qual") +
+    labs(x = "Resolution",
+         y = "Replicability",
+         col = "Clustering\nmethod",
+         linetype = "Method of\nmerging") +
+    # theme(axis.title = element_text(size = 20),
+    #       axis.text = element_text(size = 15),
+    #       legend.title = element_text(size = 20),
+    #       legend.text = element_text(size = 15))  +
+    NULL
+  return(p)
+}
+```
+
+# Inidividual starting points
+## Scenario A
+
+```{r}
+plotComp(method = "Normal")
+```
+
+## Scenario B
+
+```{r}
+plotComp(method = "large2")
+```
+
+## Scenario C
+
+```{r}
+plotComp(method = "large3")
+```
+
+# All together
+
+We 
+
+```{r}
+df <- bind_rows(A = load_single_method("Normal"),
+                B = load_single_method("large2"),
+                C = load_single_method("large3"),
+                .id = "Run")
+df <- df %>% 
+  filter(nb_clusters > 15) %>%
+  group_by(Run, Method, clustering_method) %>%
+  dplyr::mutate(nb_clusters = dplyr::first(nb_clusters) - nb_clusters,
+         fraction_replicable_cells = fraction_replicable_cells - 
+           dplyr::first(fraction_replicable_cells))
+ggplot(df,
+       aes(x = nb_clusters / 2,
+                  y = fraction_replicable_cells,
+                  col = interaction(clustering_method, Run),
+                  label = level)) +
+    geom_path(size = 1.8) +
+    my_theme() +
+    labs(x = "Relative Coarseness",
+         y = "Relative Replicability",
+         col = "Clustering\nmethod",
+         linetype = "Method of\nmerging") +
+  facet_wrap(~Method) +
+    # theme(axis.title = element_text(size = 20),
+    #       axis.text = element_text(size = 15),
+    #       legend.title = element_text(size = 20),
+    #       legend.text = element_text(size = 15))  +
+    NULL +
+  geom_hline(yintercept = 0, col = "black")
+```
