@@ -29,10 +29,6 @@ option_list <- list(
   make_option(c("-p", "--plots"),
               action = "store", default = NA, type = "character",
               help = "Location of the visual output. Default to [default %default], no output"
-  ),
-  make_option(c("-c", "--cluster"),
-              action = "store", default = NA, type = "character",
-              help = "Location of the cluster file. Default to [default %default]"
   )
 )
 
@@ -87,11 +83,6 @@ zinbWs <- lapply(zinbDims, function(zinbDim) {
 })
 
 
-
-clusters <- read.csv(opt$c, header = T)
-cols <- clusters$cluster_color %>% as.character()
-names(cols) <- clusters$cluster_id %>% as.character()
-
 for (i in 1:length(zinbWs)) {
   type <- paste0("zinb-K", zinbDims[i])
   print(type)
@@ -100,14 +91,11 @@ for (i in 1:length(zinbWs)) {
   if (!is.na(opt$p)) {
     print("....t-SNE")
     TNSE <- Rtsne(zinbW, initial_dims = min(50, zinbDims[i]))
-    df <- data.frame(x = TNSE$Y[, 1], y = TNSE$Y[, 2],
-                     cols = as.factor(colData(sce)$allenClusters))
-    p <- ggplot(df, aes(x = x, y = y, col = cols)) +
+    df <- data.frame(x = TNSE$Y[, 1], y = TNSE$Y[, 2])
+    p <- ggplot(df, aes(x = x, y = y)) +
       geom_point(size = .1, alpha = .3) +
       theme_classic() +
-      scale_color_manual(values = cols, breaks = names(cols)) +
-      labs(x = "dim1", y = "dim2") +
-      guides(color = FALSE)
+      labs(x = "dim1", y = "dim2")
     ggsave(paste0(opt$p, "_K_", zinbDims[i], ".png"), p)
     print("....Saving plot")
   }
