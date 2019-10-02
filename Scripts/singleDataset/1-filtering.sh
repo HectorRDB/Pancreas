@@ -19,8 +19,8 @@ echo "segerstolpe"
 loc="/scratch/users/singlecell/Pancreas/RawData/segerstolpe.rds"
 out="/scratch/users/singlecell/Pancreas/ProcessedData/segerstolpe_filt.rds"
 Rscript --verbose  1-filtering.R -l $loc -o $out -c 5 > 1-segerstolpe.out 2>&1
-
-echo "xin"
-loc="/scratch/users/singlecell/Pancreas/RawData/xin.rds"
-out="/scratch/users/singlecell/Pancreas/ProcessedData/xin_filt.rds"
-Rscript --verbose  1-filtering.R -l $loc -o $out -c 5 > 1-xin.out 2>&1
+# 
+# echo "xin"
+# loc="/scratch/users/singlecell/Pancreas/RawData/xin.rds"
+# out="/scratch/users/singlecell/Pancreas/ProcessedData/xin_filt.rds"
+# Rscript --verbose  1-filtering.R -l $loc -o $out -c 5 > 1-xin.out 2>&1
