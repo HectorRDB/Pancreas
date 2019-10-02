@@ -1,14 +1,21 @@
-#!/bin/bash
+SC3.csv#!/bin/bash
 #SBATCH --mail-user=hector.rouxdebezieux@berkeley.edu
 #SBATCH --mail-type=ALL
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
 #SBATCH --nodes=1
 
-loc="/scratch/users/singlecell/MiniAtlas/data/rds/SMARTer_nuclei_MOp_filt.rds"
-out="/accounts/projects/epurdom/singlecell/allen/allen40K/Pipeline_Brain/data/singleMethod/SMARTer_nuclei_MOp_SC3.csv"
-Rscript --verbose  4-sc3.R -n 20 -l $loc -o $out > 4b.out 2>&1
+echo "baron"
+loc="/scratch/users/singlecell/Pancreas/ProcessedData/baron_filt.rds"
+out="/accounts/projects/epurdom/singlecell/Pancreas/Data/singleMethod/baron_SC3.csv"
+Rscript --verbose  3-sc3.R -n 32 -l $loc -o $out -p plot > 3-baron.out 2>&1
 
-loc="/scratch/users/singlecell/MiniAtlas/data/rds/SMARTer_cells_MOp_filt.rds"
-out="/accounts/projects/epurdom/singlecell/allen/allen40K/Pipeline_Brain/data/singleMethod/SMARTer_cells_MOp_SC3.csv"
-Rscript --verbose  4-sc3.R -n 20 -l $loc -o $out > 4a.out 2>&1
+# echo "muraro"
+# loc="/scratch/users/singlecell/Pancreas/ProcessedData/muraro_filt.rds"
+# out="/accounts/projects/epurdom/singlecell/Pancreas/Data/singleMethod/muraro_SC3.csv"
+# Rscript --verbose  3-sc3.R -n 32 -l $loc -o $out -p plot > 3-muraro.out 2>&1
+
+echo "segerstolpe"
+loc="/scratch/users/singlecell/Pancreas/ProcessedData/segerstolpe_filt.rds"
+out="/accounts/projects/epurdom/singlecell/Pancreas/Data/singleMethod/segerstolpe_SC3.csv"
+Rscript --verbose  3-sc3.R -n 32 -l $loc -o $out -p plot > 3-segerstolpe.out 2>&1
