@@ -1,4 +1,4 @@
-SC3.csv#!/bin/bash
+#!/bin/bash
 #SBATCH --mail-user=hector.rouxdebezieux@berkeley.edu
 #SBATCH --mail-type=ALL
 #SBATCH --ntasks=1
