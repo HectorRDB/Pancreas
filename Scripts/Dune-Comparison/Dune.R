@@ -211,4 +211,4 @@ for (clustering in c("sc3", "Monocle", "Seurat")) {
 
 res <- do.call('cbind', res) %>% as.data.frame()
 res$cells <- colnames(Rsec)
-write_csv(res, path = paste0(output, "_hierarchical_dist.csv"))
+write_csv(res, path = paste0(output, "_hierarchical_Dist.csv"))
