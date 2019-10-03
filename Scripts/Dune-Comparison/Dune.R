@@ -29,6 +29,10 @@ option_list <- list(
   make_option(c("-r", "--rsec"),
               action = "store", default = NA, type = "character",
               help = "Location of the Rsec object"
+  ),
+  make_option(c("-p", "--plot"),
+              action = "store", default = "None", type = "character",
+              help = "Where and if to store plot"
   )
 )
 
@@ -78,16 +82,29 @@ library(mclust)
 # Load sc3 clustering results
 sc3 <- read.csv(paste0(loc, "_SC3.csv"))[, -1]
 colnames(sc3) <- str_remove(colnames(sc3), "^X") %>% str_replace("\\.", "-")
+if (opt$p != "None") {
+  ggsave(filename = paste0(opt$p, "_SC3_ARI.png"),
+         plot = plotARIs(sc3 %>% select(-cells), values = FALSE,
+                         numericalLabels = TRUE))  
+}
 Names <- sc3$cells
 sc3 <- sc3[, sc3_p] %>% as.numeric()
 
 # Load Seurat clustering results
 Seurat <- read.csv(paste0(loc, "_Seurat.csv"))[, -1]
 colnames(Seurat) <- str_remove(colnames(Seurat), "^X")
+if (opt$p != "None") {
+  ggsave(filename = paste0(opt$p, "_Seurat_ARI.png"),
+         plot = plotARIs(seurat %>% select(-cells), values = FALSE))
+}
 Seurat <- Seurat[, seurat_p] %>% as.numeric()
 
 # Load Monocle clustering results
 Monocle <- read.csv(paste0(loc, "_Monocle.csv"))[, -1]
+if (opt$p != "None") {
+  ggsave(filename = paste0(opt$p, "_Monocle_ARI.png"),
+         plot = plotARIs(Monocle %>% select(-cells), values = FALSE))
+}
 Monocle <- as.data.frame(Monocle)[, monocle_p] %>% as.numeric()
 
 # Get the final clustering labels

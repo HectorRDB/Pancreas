@@ -9,10 +9,12 @@ echo "baron"
 loc="/accounts/projects/epurdom/singlecell/Pancreas/Data/singleMethod/baron"
 rsec="/scratch/users/singlecell/Pancreas/ProcessedData/baron_Rsec.rds"
 out="/accounts/projects/epurdom/singlecell/Pancreas/Data/Dune/baron_comp1"
-Rscript --verbose  Dune.R -n 32 -l $loc -o $out -S "1.2.50" -C "15" -m "k_40" -r $rsec > baron1.out 2>&1
+plot="/accounts/projects/epurdom/singlecell/Pancreas/Figures/ARI/baron_"
+Rscript --verbose  Dune.R -n 32 -l $loc -o $out -S "1.2.50" -C "15" -m "k_40" -r $rsec -p $plot > baron1.out 2>&1
 
 echo "segerstolpe"
 loc="/accounts/projects/epurdom/singlecell/Pancreas/Data/singleMethod/segerstolpe"
 rsec="/scratch/users/singlecell/Pancreas/ProcessedData/segerstolpe_Rsec.rds"
 out="/accounts/projects/epurdom/singlecell/Pancreas/Data/Dune/segerstolpe_comp1"
-Rscript --verbose  Dune.R -n 32 -l $loc -o $out -S "1.2.50" -C "0" -m "k_40" -r $rsec > segerstolpe1.out 2>&1
+plot="/accounts/projects/epurdom/singlecell/Pancreas/Figures/ARI/segerstolpe_"
+Rscript --verbose  Dune.R -n 32 -l $loc -o $out -S "1.2.50" -C "0" -m "k_40" -r $rsec -p $plot > segerstolpe1.out 2>&1
