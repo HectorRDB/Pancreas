@@ -43,7 +43,7 @@ sce <- readRDS(file = loc)
 rowData(sce)$feature_symbol <- rownames(sce)
 sce <- sc3_estimate_k(sce)
 K <- metadata(sce)$sc3$k_estimation
-ks <- 2:(K + 20)
+ks <- 10:(K + 10)
 names(ks) <- ks - K
 sc3 <- map_df(ks, function(k){
   SC3 <- sc3(sce, ks = k, svm_max = ncol(sce) + 1, biology = FALSE,
