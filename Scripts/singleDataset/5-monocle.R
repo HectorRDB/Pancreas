@@ -9,6 +9,10 @@ option_list <- list(
   make_option(c("-l", "--location"),
               action = "store", default = NA, type = "character",
               help = "The location of the data"
+  ),
+  make_option(c("-k", "--k-zinb"),
+              action = "store", default = 3, type = "integer",
+              help = "which zinbwave dim reduction to use"
   )
 )
 
