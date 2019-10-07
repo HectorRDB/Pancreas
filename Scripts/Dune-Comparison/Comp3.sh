@@ -14,5 +14,5 @@ Rscript --verbose  Dune.R -n 32 -l $loc -o $out -S "1.5.50" -C "10" -m "k_25" -r
 echo "segerstolpe"
 loc="/accounts/projects/epurdom/singlecell/Pancreas/Data/singleMethod/segerstolpe"
 rsec="/scratch/users/singlecell/Pancreas/ProcessedData/segerstolpe_Rsec.rds"
-out="/accounts/projects/epurdom/singlecell/Pancreas/Data/Dune/segerstolpe_comp4"
+out="/accounts/projects/epurdom/singlecell/Pancreas/Data/Dune/segerstolpe_comp3"
 Rscript --verbose  Dune.R -n 32 -l $loc -o $out -S "1.5.50" -C "10" -m "k_25" -r $rsec > segerstolpe3.out 2>&1

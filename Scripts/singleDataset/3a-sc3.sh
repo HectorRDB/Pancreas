@@ -14,8 +14,3 @@ Rscript --verbose  3-sc3.R -n 32 -l $loc -o $out > 3-baron.out 2>&1
 # loc="/scratch/users/singlecell/Pancreas/ProcessedData/muraro_filt.rds"
 # out="/accounts/projects/epurdom/singlecell/Pancreas/Data/singleMethod/muraro_SC3.csv"
 # Rscript --verbose  3-sc3.R -n 32 -l $loc -o $out > 3-muraro.out 2>&1
-
-echo "segerstolpe"
-loc="/scratch/users/singlecell/Pancreas/ProcessedData/segerstolpe_filt.rds"
-out="/accounts/projects/epurdom/singlecell/Pancreas/Data/singleMethod/segerstolpe_SC3.csv"
-Rscript --verbose  3-sc3.R -n 32 -l $loc -o $out > 3-segerstolpe.out 2>&1
