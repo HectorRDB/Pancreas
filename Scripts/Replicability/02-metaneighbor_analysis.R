@@ -61,131 +61,83 @@ export_components <- function(component_obj, output_dir) {
   dev.off()
 }
 
-analyze_smart_tenx <- function(dataset, label_matrix, output_dir) {
-  compute_replicability(dataset, label_matrix,
-                        file.path(output_dir, "smart_tenx"))
-}
-
-analyze_smart <- function(dataset, label_matrix, output_dir) {
-  keep <- dataset$study_id %in% c("zeng_smart_cells", "zeng_smart_nuclei")
-  compute_replicability(dataset[, keep], label_matrix[keep, ],
-                        file.path(output_dir, "smart"))
-}
-
-analyze_tenx <- function(dataset, label_matrix, output_dir) {
-  keep <- dataset$study_id %in% c("zeng_10x_cells", "zeng_10x_nuclei")
-  compute_replicability(dataset[, keep], label_matrix[keep, ],
-                        file.path(output_dir, "tenx"))
-}
-
-analyze_cells <- function(dataset, label_matrix, output_dir) {
-  keep <- dataset$study_id %in% c("zeng_10x_cells", "zeng_smart_cells")
-  compute_replicability(dataset[, keep], label_matrix[keep, ],
-                        file.path(output_dir, "cells"))
-}
-
-analyze_nuclei <- function(dataset, label_matrix, output_dir) {
-  keep <- dataset$study_id %in% c("zeng_10x_nuclei", "zeng_smart_nuclei")
-  compute_replicability(dataset[, keep], label_matrix[keep, ],
-                        file.path(output_dir, "nuclei"))
+analyze_data <- function(dataset, label_matrix, output_dir) {
+  compute_replicability(dataset, label_matrix, file.path(output_dir))
 }
 
 # Main functions ----
 ## Dune ----
-analyze_all_Dunes <- function(data_path = here("data"),
-                              output_dir = here("data", "Replicability",
-                                                "mn_results", "Dune_Smart")) {
+analyze_Dunes <- function(data_path = here("Data"),
+                          output_dir = here("Data", "Replicability",
+                                            "mn_results", "Dune")) {
   dataset <- load_smart_data()
-  # Dune normal
+  # Dune comp1
   labels <- load_Dune_labels(colnames(dataset), data_path)
-  analyze_smart(dataset, labels, paste0(output_dir, "/Normal"))
-  # Dune large2
-  labels <- load_Dune_labels(colnames(dataset), data_path, size = "large2")
-  analyze_smart(dataset, labels, paste0(output_dir, "/large2"))
-  # Dune large3
-  labels <- load_Dune_labels(colnames(dataset), data_path, size = "large3")
-  analyze_smart(dataset, labels, paste0(output_dir, "/large3"))
+  analyze_data(dataset, labels, paste0(output_dir, "/comp1"))
+  # Dune comp2
+  labels <- load_Dune_labels(colnames(dataset), data_path, size = "comp2")
+  analyze_data(dataset, labels, paste0(output_dir, "/comp2"))
+  # Dune comp3
+  labels <- load_Dune_labels(colnames(dataset), data_path, size = "comp3")
+  analyze_data(dataset, labels, paste0(output_dir, "/comp3"))
 }
 
 ## Hierarchical ----
-analyze_all_single_merge <- function(data_path = here("data"),
-                                 output_dir = here("data", "Replicability",
+analyze_single_merge <- function(data_path = here("Data"),
+                                 output_dir = here("Data", "Replicability",
                                                    "mn_results", "singleTree")) {
   dataset <- load_smart_data()
   # DE
-  ## Normal single Merge
+  ## comp1 single Merge
   labels <- load_single_merge_labels(colnames(dataset), data_path)
-  analyze_smart(dataset, labels, paste0(output_dir, "/Normal_DE"))
+  analyze_data(dataset, labels, paste0(output_dir, "/comp1_DE"))
   ## Comparison 2
   labels <- load_single_merge_labels(colnames(dataset), data_path,
-                                     size = "_large2")
-  analyze_smart(dataset, labels, paste0(output_dir, "/Large2_DE"))
+                                     size = "_comp2")
+  analyze_data(dataset, labels, paste0(output_dir, "/comp2_DE"))
   ## Comparison 3
   labels <- load_single_merge_labels(colnames(dataset), data_path,
-                                     size = "_large3")
-  analyze_smart(dataset, labels, paste0(output_dir, "/Large3_DE"))
+                                     size = "_comp3")
+  analyze_data(dataset, labels, paste0(output_dir, "/comp3_DE"))
   # Dist
-  ## Normal single Merge
+  ## comp1 single Merge
   labels <- load_single_merge_labels(colnames(dataset), data_path, type = "Dist")
-  analyze_smart(dataset, labels, paste0(output_dir, "/Normal_DE"))
+  analyze_data(dataset, labels, paste0(output_dir, "/comp1_Dist"))
   ## Comparison 2
   labels <- load_single_merge_labels(colnames(dataset), data_path,
-                                     size = "_large2", type = "Dist")
-  analyze_smart(dataset, labels, paste0(output_dir, "/Large2_DE"))
+                                     size = "_comp2", type = "Dist")
+  analyze_data(dataset, labels, paste0(output_dir, "/comp2_Dist"))
   ## Comparison 3
   labels <- load_single_merge_labels(colnames(dataset), data_path,
-                                     size = "_large3", type = "Dist")
-  analyze_smart(dataset, labels, paste0(output_dir, "/Large3_DE"))
+                                     size = "_comp3", type = "Dist")
+  analyze_data(dataset, labels, paste0(output_dir, "/comp3_Dist"))
 }
 
 ## single Method ----
-analyze_single_methods_smart <- function(
-  data_path = here("data"),
-  output_dir = here("data", "Replicability", "mn_results", "SingleMethod")) 
+analyze_single_methods <- function(
+  data_path = here("Data"),
+  output_dir = here("Data", "Replicability", "mn_results", "SingleMethod")) 
   {
   dataset <- load_smart_data()
   # Seurat
   labels <- load_single_seurat_labels(colnames(dataset), data_path)
-  analyze_smart(dataset, labels, output_dir)
+  analyze_data(dataset, labels, output_dir)
   # SC3
   labels <- load_single_sc3_labels(colnames(dataset), data_path)
-  analyze_smart(dataset, labels, output_dir)
+  analyze_data(dataset, labels, output_dir)
   # Monocle
   labels <- load_single_monocle_labels(colnames(dataset), data_path)
-  analyze_smart(dataset, labels, output_dir)
-}
-
-analyze_single_methods_all <- function(
-  data_path = here("data"),
-  output_dir = here("data", "Replicability", "mn_results", "SingleMethod")) 
-  {
-  dataset <- load_data()
-  # Seurat
-  labels <- load_seurat_all_labels(colnames(dataset), data_path)
-  analyze_smart_tenx(dataset, labels, output_dir)
-  analyze_tenx(dataset, labels, output_dir)
-  analyze_cells(dataset, labels, output_dir)
-  analyze_nuclei(dataset, labels, output_dir)
-  # Monocle
-  labels <- load_monocle_all_labels(colnames(dataset), data_path)
-  analyze_smart_tenx(dataset, labels, output_dir)
-  analyze_tenx(dataset, labels, output_dir)
-  analyze_cells(dataset, labels, output_dir)
-  analyze_nuclei(dataset, labels, output_dir)
+  analyze_data(dataset, labels, output_dir)
 }
 
 ## To run ----
 main <- function() {
   print("single Method smart")
-  analyze_single_methods_smart()
-  print("single Method all")
-  analyze_single_methods_all()
+  analyze_single_methods()
   print("single merge")
-  analyze_all_single_merge()
+  analyze_single_merge()
   print("single All Dunes")
-  # analyze_all_Dunes()
-  print("single full data")
-  # analyze_full_data()
+  analyze_Dunes()
 }
 
 if (!interactive()) {
