@@ -92,18 +92,6 @@ analyze_nuclei <- function(dataset, label_matrix, output_dir) {
 
 # Main functions ----
 ## Dune ----
-analyze_full_data <- function(data_path = here("data"),
-                              output_dir = here("data", "Replicability",
-                                                "mn_results", "Dune")) {
-  dataset <- load_data()
-  labels <- load_labels(colnames(dataset), data_path)
-
-  analyze_smart_tenx(dataset, labels, output_dir)
-  analyze_tenx(dataset, labels, output_dir)
-  analyze_cells(dataset, labels, output_dir)
-  analyze_nuclei(dataset, labels, output_dir)
-}
-
 analyze_all_Dunes <- function(data_path = here("data"),
                               output_dir = here("data", "Replicability",
                                                 "mn_results", "Dune_Smart")) {
