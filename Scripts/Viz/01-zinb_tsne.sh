@@ -18,4 +18,4 @@ out="/accounts/projects/epurdom/singlecell/Pancreas/Data/tSNE/baron.csv"
 echo "segerstolpe"
 loc="/scratch/users/singlecell/Pancreas/ProcessedData/segerstolpe_zinbW.rds"
 out="/accounts/projects/epurdom/singlecell/Pancreas/Data/tSNE/segerstolpecsv"
-  Rscript --verbose  01-zinb_tsne.R -l $loc -o $out -K 20 > 2-segerstolpe.out 2>&1
+  Rscript --verbose  01-zinb_tsne.R -l $loc -o $out -K 20 > 1-segerstolpe.out 2>&1
