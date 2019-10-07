@@ -6,7 +6,6 @@ suppressPackageStartupMessages({
 
 setwd(common_dir)
 source("variable_genes.R")
-source("identifier_conversion.R")
 source("datasets.R")
 setwd(current_dir)
 
