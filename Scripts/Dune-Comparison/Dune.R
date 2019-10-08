@@ -95,7 +95,7 @@ Seurat <- read.csv(paste0(loc, "_Seurat.csv"))[, -1]
 colnames(Seurat) <- str_remove(colnames(Seurat), "^X")
 if (opt$p != "None") {
   ggsave(filename = paste0(opt$p, "_Seurat_ARI.png"),
-         plot = plotARIs(seurat %>% select(-cells), values = FALSE))
+         plot = plotARIs(Seurat %>% select(-cells), values = FALSE))
 }
 Seurat <- Seurat[, seurat_p] %>% as.numeric()
 
