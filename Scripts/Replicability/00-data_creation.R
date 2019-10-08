@@ -19,7 +19,12 @@ create_data = function() {
 
     col_data <- fuse_coldata(dataset)
     dataset <- fuse_datasets(dataset)
-    colData(dataset) <- col_data
+    dataset <- SingleCellExperiment(
+      assays = list("counts" = as.matrix(dataset)),
+      colData = as(col_data, "DataFrame")
+      )
+    hvg <- variable_genes(dataset)
+    rowData(dataset)$is_hvg <- rownames(dataset) %in% hvg
 
     saveRDS(dataset, here("Data", "full_data.rds"))
 }
