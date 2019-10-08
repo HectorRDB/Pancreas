@@ -15,11 +15,10 @@ compute_replicability <- function(dataset, label_matrix, output_dir) {
   label_matrix <- dplyr::select(label_matrix, -dataset, -cells)
   label_sets <- colnames(label_matrix)
   
-  is_not_noise <- dataset$class_label != "Noise"
   is_hvg <- rowData(dataset)$is_hvg
   
-  my_dataset <- dataset[is_hvg, is_not_noise]
-  my_labels <- label_matrix[is_not_noise, ]
+  my_dataset <- dataset[is_hvg, ]
+  my_labels <- label_matrix[, ]
   for (current_set in label_sets) {
     labels <- my_labels[, current_set]
     is_not_na <- !is.na(labels)
