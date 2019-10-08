@@ -19,7 +19,10 @@ create_data = function() {
 
     col_data <- fuse_coldata(dataset)
     dataset <- fuse_datasets(dataset)
-    colData(dataset) <- col_data
+    dataset <- SingleCellExperiment(
+      assays = list("counts" = as.matrix(dataset)),
+      colData = as(col_data, "DataFrame")
+      )
 
     saveRDS(dataset, here("Data", "full_data.rds"))
 }

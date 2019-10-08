@@ -7,12 +7,9 @@ remove_zero_genes <- function(dataset) {
 
 fuse_datasets <- function(dataset_list) {
   result <- restrict_to_common_genes(dataset_list)
-  common_col_names <- Reduce(intersect, lapply(result, function(d) colnames(colData(d))))
-  for (i in seq_along(result)) {
-    colData(result[[i]]) <- colData(result[[i]])[, common_col_names]
-  }
-  result <- do.call(cbind, lapply(result, assays, "counts"))
-  result$study_id <- rep(names(dataset_list), sapply(dataset_list, ncol))
+  result <- lapply(result, counts)
+  result <- do.call(cbind, result)
+  result <- as.data.frame(result)
   return(result)
 }
 
@@ -26,7 +23,8 @@ fuse_coldata <- function(dataset_list) {
   col_names <- Reduce(intersect, col_names)
   result <- lapply(dataset_list, function(d) colData(d)[, col_names])
   result <- do.call(rbind, result)
-  result <- lapply(result, as.character)
+  result <- as.data.frame(result)
+  result$study_id <- rep(names(dataset_list), sapply(dataset_list, ncol))
   return(result)
 }
 
@@ -49,7 +47,7 @@ get_deciles <- function(m) {
 read_sparse_csv <- function(filename) {
   f <- file(filename, "r")
   col_names <- read_header(f)
-
+  
   row_names <- c()
   row_indices <- list()
   col_indices <- list()
@@ -68,7 +66,7 @@ read_sparse_csv <- function(filename) {
     line <- readLines(f, 1)
   }
   close(f)
-
+  
   result <- Matrix::sparseMatrix(
     i = unlist(row_indices),
     j = unlist(col_indices),
