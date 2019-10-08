@@ -23,6 +23,8 @@ create_data = function() {
       assays = list("counts" = as.matrix(dataset)),
       colData = as(col_data, "DataFrame")
       )
+    hvg <- variable_genes(dataset)
+    rowData(dataset)$is_hvg <- rownames(dataset) %in% hvg
 
     saveRDS(dataset, here("Data", "full_data.rds"))
 }
