@@ -123,7 +123,7 @@ if (!str_detect(params$dataset, "Regev")) {
   sc3 <- read.csv(here("data", "SingleMethod", paste0(params$dataset, "_SC3.csv"))) %>%
     select(-X)
   colnames(sc3) <- paste0("sc3_",
-                          str_remove(colnames(SC3), "X") %>% str_replace("\\.", "-"))
+                          str_remove(colnames(sc3), "X") %>% str_replace("\\.", "-"))
   colnames(sc3)[ncol(sc3)] <- "cells"
   Seurat <- read.csv(here("data", "SingleMethod", paste0(params$dataset, "_Seurat.csv"))) %>%
     select(-X)
