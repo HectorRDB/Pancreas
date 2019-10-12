@@ -13,6 +13,10 @@ option_list <- list(
   make_option(c("-c", "--cutoff"),
               action = "store", default = 50, type = "character",
               help = "The cutoff for filtering"
+  ),
+  make_option(c("-m", "--meta"),
+              action = "store", default = NA, type = "character",
+              help = "Where to store the metadata"
   )
 )
 
@@ -38,6 +42,7 @@ library(SingleCellExperiment)
 # Load data per se ----
 
 Sce <- readRDS(loc)
+write.csv(colData(Sce), opt$m)
 cat("Preparing the data", "\n")
 counts <- counts(Sce)
 counts <- as.matrix(counts)

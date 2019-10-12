@@ -9,7 +9,7 @@ output:
     code_download: TRUE
     
 params:
-  dataset: Baron 
+  dataset: baron 
   title: "Analysis of the Baron dataset"
 ---
 ---
@@ -23,20 +23,15 @@ opts_chunk$set(
   fig.width = 5, fig.align = "center", echo = F
 )
 libs <- c("here", "dplyr", "ggplot2", "tidyr", "stringr", "readr", "cowplot",
-          "clusterExperiment", "mclust", "RColorBrewer", "progress", "Dune",
+          "clusterExperiment", "mclust", "RColorBrewer", "purrr", "Dune",
           "png")
 suppressMessages(
   suppressWarnings(sapply(libs, require, character.only = TRUE))
 )
 rm(libs)
-type <- function(dataset) {
-  if (str_detect(dataset, "SMART")) return("Smart-Seq")
-  if (str_detect(dataset, "10x")) return("10X")
-  stop("Type unknown")
-}
-type <- type(params$dataset)
-mergers <- readRDS(here("data", "Dune",
-                                 paste0(params$dataset, "_mergers.rds")))
+Dune <- lapply(1:3, function(i){
+  read_csv(here("Data", "Dune", paste0(params$dataset, "_comp", i, "_Dune.csv")))
+})
 ```
 
 # EDA
@@ -54,48 +49,43 @@ rasterImage(readPNG(here("Figures", "EDA", plots[length(plots)])), 0.5, 0, 1, 1)
 ```
 
 
-# General comments
-
-We have the following workflow
-
-```{r workflow, fig.height=6, fig.width=10}
-plot.new()
-plot.window(0:1, 0:1)
-rasterImage(readPNG(here("Figures", "Workflow", "Workflow.png")),
-            0, 0, 1, 1)
-```
-
-In the Seurat clustering, there are two parameters to choose from: the resolution and the k.param (use in a knn step). From the seurat help file, for the resolution parameter: use a value above (below) 1.0 if you want to obtain a larger (smaller) number of communities.
-
-We picked a value of 1.6 as we want many clusters to start with. We also pick k = 50. Those values seem intermediate in term of ARI with other pairs of paramters (see section Seurat ARI param)
-
-We also consider two ways of computing the ARI between RSEC and other methods. Either, we force RSEC to assign all cells to a given cluster, or we only compute the ARI between RSEC and the other methods on those cells that RSEC do cluster. Note that in the second case, other pairs of methods are compared using all cells. We denote as RsecT the cluster assignement where all cells are assigned (i.e Rsec Total). 
-
-The ARI merging method works as follow. We iterate over all pairs of clusters for every clustering method. For each pair, we try to merge the two clusters and see how it improves the ARI with the other methods. We then merge the pair that improves the ARI the most. We stop when the ARI cannot be improved anymore.
-
-In the general case, we perform the ARI merging without the allen labels and we then use it as a comparison. A quick overview of how the algorithm performs with the allen labels is seen at the end.
-
 # Reduction in the number of clusters
 
 ```{r Imp no allen}
-plotPrePost(mergers)
+prePost <- function(df) {
+  n_clust <- map_df(df, n_distinct) %>%
+    select(-cells) %>%
+    pivot_longer(everything(), names_to = "method", values_to = "n_clus") %>%
+    dplyr::mutate(step = word(method, 2, sep = "-"),
+                  method = word(method, 1, sep = "-")) %>%
+    filter(step %in% c("Initial", "Final")) %>%
+    dplyr::mutate(step = factor(step, levels = c("Initial", "Final")))
+  p <- ggplot(n_clust, aes(x = method, y = n_clus, fill = step)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    theme_classic() +
+    scale_fill_viridis_d(option = "E") +
+    labs(x = "Clustering Methods", y = "Number of clusters", fill = "") +
+    ggtitle("Reduction in number of clusters with ARI merging")
+  return(p)
+}
+prePost(Dune[[1]])
 ```
 
 # Improvement in ARI
 
 ```{r ARI imp no allen cell}
-plot_grid(
-  plotARIs(mergers$initialMat) + ggtitle("Before merging"),
-  plotARIs(mergers$currentMat) + ggtitle("After merging")
-)
+ARI <- function(df) {
+  keep <- str_detect(colnames(df), "Initial") |
+          str_detect(colnames(df), "Final")
+  df <- df[, keep]
+  plotARIs(df[, 1:3])
+  plot_grid(plotARIs(df[, 1:3]),
+            plotARIs(df[, 4:6]))
+}
+ARI(Dune[[1]])
 ```
 
-
-```{r ARI trend, fig.width=9}
-ARItrend(merger = mergers)
-```
-
-# Comparison with Allen subclass
+# Comparison with the reference
 
 ## After ARI merging
 
