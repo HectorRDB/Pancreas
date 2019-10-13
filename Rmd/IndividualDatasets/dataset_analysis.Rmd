@@ -90,14 +90,14 @@ ARI(Dune[[1]])
 ## After ARI merging
 
 ```{r comp cell}
+# Ref clusters
 ref_clusters <- read.csv(here("data", params$dataset,
-                              paste0(params$dataset, "_meta.csv")))
+                              paste0(params$dataset, "_meta.csv"))) %>%
+  arrange(X) %>%
+  `$`("cell_type1") %>%
+  as.numeric()
 
-final <- map_df(mergers$currentMat, adjustedRandIndex, y = allen_clusters$subclass_label) %>%
-  pivot_longer(everything(), names_to = "clus_method", values_to = "ARI")
-initial <- map_df(mergers$initialMat, adjustedRandIndex, y = allen_clusters$subclass_label) %>%
-  pivot_longer(everything(), names_to = "clus_method", values_to = "ARI")
-  
+# Single Methods
 Monocle <- read.csv(here("data", "SingleMethod", paste0(params$dataset, "_Monocle.csv"))) %>%
   select(-X)
 colnames(Monocle) <- paste0("Monocle_", str_remove(colnames(Monocle), "^k_"))
@@ -113,74 +113,36 @@ colnames(Seurat) <- paste0("Seurat_", str_remove(colnames(Seurat), "^X"))
 colnames(Seurat)[ncol(Seurat)] <- "cells"
   
 singles <- full_join(sc3, Seurat) %>% full_join(Monocle) %>%
-  arrange(cells) %>% select(-cells) %>% as.list() %>%
-  map_df(., adjustedRandIndex, y = allen_clusters$subclass_label) %>%
+  arrange(cells) %>% select(-cells) %>%
+  map_df(., adjustedRandIndex, y = ref_clusters) %>%
   pivot_longer(everything(), names_to = "method", values_to = "ARI") %>%
   dplyr::mutate(clus_method = word(method, 1, sep = "_"),
                 level = word(method, 2, sep = "_"))
-ggplot(singles, aes(x = clus_method, y = ARI)) +
-  geom_violin() +
-  theme_classic() +
-  geom_point(
-    data = bind_rows("Final" = final, "Initial" = initial, .id = "step"),
-    aes(col = step)) +
-  scale_color_brewer(type = "qual")
+rm(sc3, Monocle, Seurat)
+
+walk(Dune, function(df){
+  final <- df %>%
+    arrange(cells) %>%
+    select(-cells) %>%
+    lapply(., adjustedRandIndex, y = ref_clusters) %>%
+    as.data.frame() %>%
+    pivot_longer(everything(), names_to = "clus_method", values_to = "ARI")
+  initial <- final %>%
+    filter(str_detect(clus_method, "Initial")) %>%
+    dplyr::mutate(clus_method = word(clus_method, 1, sep = "\\."))
+  final <- final %>%
+    filter(str_detect(clus_method, "Final")) %>%
+    dplyr::mutate(clus_method = word(clus_method, 1, sep = "\\."))
+  
+  p <- ggplot(singles, aes(x = clus_method, y = ARI)) +
+    geom_violin() +
+    theme_classic() +
+    geom_point(
+      data = bind_rows("Final" = final, "Initial" = initial, .id = "step"),
+      aes(col = step)) +
+    scale_color_brewer(type = "qual")
+  print(p)
+})
+
 ```
 
-
-## After a last consensus step
-
-```{r final consensus}
-clusters <- mergers$currentMat
-r <- which(colnames(clusters) == "RsecT")
-if (all.equal(integer(0) ,r) != TRUE) {
-  clusters[,"Rsec"] <- assignRsec(mergers) 
-}
-clusters <- as.matrix(clusters) 
-
-cellsConsensus <- Consensus(clusMat = clusters,
-                            large = (type != "Smart-Seq"))
-consensus <- cbind(cellsConsensus,
-                   allen_clusters$subclass_label,
-                   clusters)
-
-colnames(consensus)[c(1, 2)] <- c("Consensus", "Allen\nsubclass")
-plotClusters(object = consensus)
-title("Consensus Merging with proportion\nand comparison with the allen subclass.")
-
-rm(clusters, cellsConsensus, consensus)
-```
-
-## Stopping during the merging
-
-```{r consensus with intermediate}
-midMat <- intermediateMat(merger = mergers,
-                          p = .9)
-r <- which(colnames(midMat) == "RsecT")
-if (all.equal(integer(0) ,r) != TRUE) {
-  midMat[,"Rsec"] <- assignRsec(mergers, p = .9)
-}
-midMat <- as.matrix(midMat)
-
-cellsConsensus <- Consensus(clusMat = midMat,
-                            large = (type != "Smart-Seq"))
-consensus <- cbind(cellsConsensus,
-                   allen_clusters$subclass_label,
-                   midMat) %>% as.data.frame()
-
-colnames(consensus)[c(1, 2)] <- c("Consensus", "Allen\nsubclass")
-plotClusters(object = consensus %>% as.matrix())
-title("Consensus Merging when stopping early")
-
-rm(cellsConsensus, consensus, midMat)
-```
-
-# Seurat ARI Param
-
-```{r seurat param}
-plot.new()
-plot.window(0:1, 0:1)
-rasterImage(readPNG(
-  here("Figures", type, paste0(params$dataset, "_seurat_ARI.png"))),
-  0, 0, 1, 1)
-```
