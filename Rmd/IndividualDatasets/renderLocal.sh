@@ -1,3 +1,4 @@
+#!/bin/bash
 datasets="baron segerstolpe"
 
 for dataset in $datasets
