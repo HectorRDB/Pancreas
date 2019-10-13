@@ -69,9 +69,9 @@ analyze_data <- function(dataset, label_matrix, output_dir) {
 analyze_Dunes <- function(data_path = here("Data"),
                           output_dir = here("Data", "Replicability",
                                             "mn_results", "Dune")) {
-  dataset <- load_smart_data()
+  dataset <- load_data()
   # Dune comp1
-  labels <- load_Dune_labels(colnames(dataset), data_path)
+  labels <- load_Dune_labels(colnames(dataset), data_path, size = "comp1")
   analyze_data(dataset, labels, paste0(output_dir, "/comp1"))
   # Dune comp2
   labels <- load_Dune_labels(colnames(dataset), data_path, size = "comp2")
@@ -85,10 +85,10 @@ analyze_Dunes <- function(data_path = here("Data"),
 analyze_single_merge <- function(data_path = here("Data"),
                                  output_dir = here("Data", "Replicability",
                                                    "mn_results", "singleTree")) {
-  dataset <- load_smart_data()
+  dataset <- load_data()
   # DE
   ## comp1 single Merge
-  labels <- load_single_merge_labels(colnames(dataset), data_path)
+  labels <- load_single_merge_labels(colnames(dataset), data_path, size = "_comp1")
   analyze_data(dataset, labels, paste0(output_dir, "/comp1_DE"))
   ## Comparison 2
   labels <- load_single_merge_labels(colnames(dataset), data_path,
@@ -100,7 +100,8 @@ analyze_single_merge <- function(data_path = here("Data"),
   analyze_data(dataset, labels, paste0(output_dir, "/comp3_DE"))
   # Dist
   ## comp1 single Merge
-  labels <- load_single_merge_labels(colnames(dataset), data_path, type = "Dist")
+  labels <- load_single_merge_labels(colnames(dataset), data_path,
+                                     size = "_comp1", type = "Dist")
   analyze_data(dataset, labels, paste0(output_dir, "/comp1_Dist"))
   ## Comparison 2
   labels <- load_single_merge_labels(colnames(dataset), data_path,
@@ -113,11 +114,11 @@ analyze_single_merge <- function(data_path = here("Data"),
 }
 
 ## single Method ----
-analyze_single_methods <- function(
-  data_path = here("Data"),
-  output_dir = here("Data", "Replicability", "mn_results", "SingleMethod")) 
-  {
-  dataset <- load_smart_data()
+analyze_single_methods <- function(data_path = here("Data"),
+                                   output_dir = here("Data", "Replicability",
+                                                     "mn_results",
+                                                     "SingleMethod")) {
+  dataset <- load_data()
   # Seurat
   labels <- load_single_seurat_labels(colnames(dataset), data_path)
   analyze_data(dataset, labels, output_dir)

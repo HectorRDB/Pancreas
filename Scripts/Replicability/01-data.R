@@ -4,16 +4,8 @@ suppressPackageStartupMessages({
 })
 
 # Helper functions ----
-export_qc_cells <- function(dataset = load_data(), filename = "qc_cells.txt") {
-  write(colnames(dataset[, dataset$class_label != "Noise"]), filename)
-}
-
 load_data <- function() {
   readRDS(here("data", "full_data.rds"))
-}
-
-load_qc_cells <- function(filename = here("data", "qc_cells.txt")) {
-  scan(filename, "character")
 }
 
 # Load dune data ----
@@ -27,7 +19,7 @@ load_Dune_labels <- function(cell_names, data_path = here("data"),
       segerstolpe = read.csv(
         file.path(input_dir, paste0("segerstolpe_", size, "_Dune.csv"))),
       .id = "dataset"
-    ) %>% select(-X)
+    )
   
   # reorder cells to match data
   row_match <- match(cell_names, label_matrix$cells)
