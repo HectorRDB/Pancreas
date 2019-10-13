@@ -301,92 +301,83 @@ plot_clusters_vs_mapped <- function(results) {
 }
 
 # Main functions ----
-main_full_data <- function(
+main_all_Dunes <- function(
   result_path = here("data", "Replicability", "mn_results", "Dune"),
   output_dir = here("data", "Replicability", "Dune")) 
   {
-    
-  label_matrix <- load_labels(load_qc_cells())
+  data_path <- here("Data")
+  dataset <- load_data()
   
-  create_summary_figures(
-    label_matrix, file.path(result_path, "smart_tenx"),
-    file.path(output_dir, "smart_tenx"), 4
-  )
-  create_summary_figures(
-    label_matrix, file.path(result_path, "tenx"),
-    file.path(output_dir, "tenx"), 2
-  )
-  create_summary_figures(
-    label_matrix, file.path(result_path, "cells"),
-    file.path(output_dir, "cells"), 2
-  )
-  create_summary_figures(
-    label_matrix, file.path(result_path, "nuclei"),
-    file.path(output_dir, "nuclei"), 2
-  )
-}
-
-main_all_Dunes <- function(
-  result_path = here("data", "Replicability", "mn_results", "Dune_Smart"),
-  output_dir = here("data", "Replicability", "Dune_Smart")) 
-  {
-  
-  dataset <- load_smart_data()
-  
-  # Dune normal
-  label_matrix <- load_Dune_labels(load_qc_cells(here("data", "qc_cells_smart.txt")))
-  label_matrix <- label_matrix[dataset$class_label != "Noise", ]
+  # Comp1
+  label_matrix <- load_Dune_labels(colnames(dataset), data_path, size = "comp1")
   create_summary_figures(label_matrix,
-                         file.path(result_path, "Normal", "smart"),
-                         file.path(output_dir, "Normal"), 2
+                         file.path(result_path, "comp1"),
+                         file.path(output_dir, "comp1"), 2
   )
-  # Dune large 2
-  label_matrix <- load_Dune_labels(load_qc_cells(here("data", "qc_cells_smart.txt")),
-                                   size = "large2")
-  label_matrix <- label_matrix[dataset$class_label != "Noise", ]
+  # Comp2
+  label_matrix <- load_Dune_labels(colnames(dataset), data_path, size = "comp2")
   create_summary_figures(label_matrix,
-                         file.path(result_path, "large2", "smart"),
-                         file.path(output_dir, "Large2"), 2
+                         file.path(result_path, "comp2"),
+                         file.path(output_dir, "comp2"), 2
   )
-  # Dune large 3
-  label_matrix <- load_Dune_labels(load_qc_cells(here("data", "qc_cells_smart.txt")),
-                                   size = "large3")
-  label_matrix <- label_matrix[dataset$class_label != "Noise", ]
+  # Comp3
+  label_matrix <- load_Dune_labels(colnames(dataset), data_path, size = "comp3")
   create_summary_figures(label_matrix,
-                         file.path(result_path, "large3", "smart"),
-                         file.path(output_dir, "Large3"), 2
+                         file.path(result_path, "comp3"),
+                         file.path(output_dir, "comp3"), 2
   )
 }
 
 main_single_merge <- function(
   result_path = here("data", "Replicability", "mn_results", "singleTree"),
-  output_dir = here("data", "Replicability", "SingleTree")) 
+  output_dir = here("data", "Replicability")) 
   {
+  data_path = here("Data")
+  dataset <- load_data()
   
-  dataset <- load_smart_data()
-  
-  # Normal hierarchical
-  label_matrix <- load_single_merge_labels(load_qc_cells(here("data", "qc_cells_smart.txt")))
-  label_matrix <- label_matrix[dataset$class_label != "Noise", ]
+  # DE
+  ## Comp1
+  label_matrix <- load_single_merge_labels(colnames(dataset), data_path,
+                                           size = "_comp1_DE")
   create_summary_figures(label_matrix,
-                         file.path(result_path, "Normal", "smart"),
-                         file.path(output_dir, "Normal"), 2
+                         file.path(result_path, "comp1"),
+                         file.path(output_dir, "DE", "comp1"), 2
   )
-  # Hierarchical large 2
-  label_matrix <- load_single_merge_labels(load_qc_cells(here("data", "qc_cells_smart.txt")),
-                                           size = "_large2")
-  label_matrix <- label_matrix[dataset$class_label != "Noise", ]
+  ## Comp2
+  label_matrix <- load_single_merge_labels(colnames(dataset), data_path,
+                                           size = "_comp2_DE")
   create_summary_figures(label_matrix,
-                         file.path(result_path, "large2", "smart"),
-                         file.path(output_dir, "Large2"), 2
+                         file.path(result_path, "comp2"),
+                         file.path(output_dir, "DE", "comp2"), 2
   )
-  # Hierarchical large 3
-  label_matrix <- load_single_merge_labels(load_qc_cells(here("data", "qc_cells_smart.txt")),
-                                           size = "_large3")
-  label_matrix <- label_matrix[dataset$class_label != "Noise", ]
+  ## Comp3
+  label_matrix <- load_single_merge_labels(colnames(dataset), data_path,
+                                           size = "_comp3_DE")
   create_summary_figures(label_matrix,
-                         file.path(result_path, "large3", "smart"),
-                         file.path(output_dir, "Large3"), 2
+                         file.path(result_path, "comp3"),
+                         file.path(output_dir, "DE", "comp3"), 2
+  )
+  # Dist
+  ## Comp1
+  label_matrix <- load_single_merge_labels(colnames(dataset), data_path,
+                                           size = "_comp1_Dist", type = "Dist")
+  create_summary_figures(label_matrix,
+                         file.path(result_path, "comp1"),
+                         file.path(output_dir, "Dist", "comp1"), 2
+  )
+  ## Comp2
+  label_matrix <- load_single_merge_labels(colnames(dataset), data_path,
+                                           size = "_comp2_Dist", type = "Dist")
+  create_summary_figures(label_matrix,
+                         file.path(result_path, "comp"),
+                         file.path(output_dir, "Dist", "comp2"), 2
+  )
+  ## Comp3
+  label_matrix <- load_single_merge_labels(colnames(dataset), data_path,
+                                           size = "_comp3_Dist", type = "Dist")
+  create_summary_figures(label_matrix,
+                         file.path(result_path, "comp3"),
+                         file.path(output_dir, "Dist", "comp3"), 2
   )
 }
 
@@ -395,45 +386,23 @@ main_single_method_all <- function(
   output_dir = here("data", "Replicability", "SingleMethod")) 
   {
   
-  dataset <- load_smart_data()
-  
+  dataset <- load_data()
+  data_path <- here("Data")
   # Smart-Seq only (3 methods)
   label_matrix <- inner_join(
-    load_single_seurat_labels(load_qc_cells(here("data", "qc_cells_smart.txt"))),
-    load_single_sc3_labels(load_qc_cells(here("data", "qc_cells_smart.txt")))
+    load_single_seurat_labels(colnames(dataset), data_path),
+    load_single_sc3_labels(colnames(dataset), data_path)
   ) %>%
-    inner_join(load_single_monocle_labels(
-      load_qc_cells(here("data", "qc_cells_smart.txt"))))
-  label_matrix <- label_matrix[dataset$class_label != "Noise", ]
-  create_summary_figures(label_matrix, file.path(result_path, "smart"),
+    inner_join(
+      load_single_monocle_labels(colnames(dataset), data_path)
+    )
+  create_summary_figures(label_matrix,
+                         file.path(result_path, "smart"),
                          file.path(output_dir, "smart"), 2)
   
-  # Smart-Seq and 10x (2 methods)
-  label_matrix <- inner_join(
-    load_seurat_all_labels(load_qc_cells()),
-    load_monocle_all_labels(load_qc_cells())
-  )
-  create_summary_figures(
-    label_matrix, file.path(result_path, "smart_tenx"),
-    file.path(output_dir, "smart_tenx"), 4
-  )
-  create_summary_figures(
-    label_matrix, file.path(result_path, "tenx"),
-    file.path(output_dir, "tenx"), 2
-  )
-  create_summary_figures(
-    label_matrix, file.path(result_path, "cells"),
-    file.path(output_dir, "cells"), 2
-  )
-  create_summary_figures(
-    label_matrix, file.path(result_path, "nuclei"),
-    file.path(output_dir, "nuclei"), 2
-  )
 }
 
 main <- function() {
-  print("full data")
-  main_full_data()
   print("all Dunes")
   main_all_Dunes()
   print("single method")
