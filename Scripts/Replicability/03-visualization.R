@@ -388,18 +388,21 @@ main_single_method_all <- function(
   
   dataset <- load_data()
   data_path <- here("Data")
-  # Smart-Seq only (3 methods)
-  label_matrix <- inner_join(
-    load_single_seurat_labels(colnames(dataset), data_path),
-    load_single_sc3_labels(colnames(dataset), data_path)
-  ) %>%
-    inner_join(
-      load_single_monocle_labels(colnames(dataset), data_path)
-    )
+  # Monocle
+  label_matrix <- load_single_monocle_labels(colnames(dataset), data_path)
   create_summary_figures(label_matrix,
-                         file.path(result_path, "smart"),
-                         file.path(output_dir, "smart"), 2)
-  
+                         result_path,
+                         file.path(output_dir, "Monocle"), 2)
+  # SC3
+  label_matrix <- load_single_sc3_labels(colnames(dataset), data_path)
+  create_summary_figures(label_matrix,
+                         result_path,
+                         file.path(output_dir, "sc3"), 2)
+  # Seurat
+  label_matrix <- load_single_seurat_labels(colnames(dataset), data_path)
+  create_summary_figures(label_matrix,
+                         result_path,
+                         file.path(output_dir, "Seurat"), 2)
 }
 
 main <- function() {
