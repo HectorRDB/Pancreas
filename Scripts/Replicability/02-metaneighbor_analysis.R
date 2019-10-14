@@ -88,28 +88,28 @@ analyze_single_merge <- function(data_path = here("Data"),
   dataset <- load_data()
   # DE
   ## comp1 single Merge
-  labels <- load_single_merge_labels(colnames(dataset), data_path, size = "_comp1")
+  labels <- load_single_merge_labels(colnames(dataset), data_path, size = "comp1")
   analyze_data(dataset, labels, paste0(output_dir, "/comp1_DE"))
   ## Comparison 2
   labels <- load_single_merge_labels(colnames(dataset), data_path,
-                                     size = "_comp2")
+                                     size = "comp2")
   analyze_data(dataset, labels, paste0(output_dir, "/comp2_DE"))
   ## Comparison 3
   labels <- load_single_merge_labels(colnames(dataset), data_path,
-                                     size = "_comp3")
+                                     size = "comp3")
   analyze_data(dataset, labels, paste0(output_dir, "/comp3_DE"))
   # Dist
   ## comp1 single Merge
   labels <- load_single_merge_labels(colnames(dataset), data_path,
-                                     size = "_comp1", type = "Dist")
+                                     size = "comp1", type = "Dist")
   analyze_data(dataset, labels, paste0(output_dir, "/comp1_Dist"))
   ## Comparison 2
   labels <- load_single_merge_labels(colnames(dataset), data_path,
-                                     size = "_comp2", type = "Dist")
+                                     size = "comp2", type = "Dist")
   analyze_data(dataset, labels, paste0(output_dir, "/comp2_Dist"))
   ## Comparison 3
   labels <- load_single_merge_labels(colnames(dataset), data_path,
-                                     size = "_comp3", type = "Dist")
+                                     size = "comp3", type = "Dist")
   analyze_data(dataset, labels, paste0(output_dir, "/comp3_Dist"))
 }
 

@@ -338,21 +338,21 @@ main_single_merge <- function(
   # DE
   ## Comp1
   label_matrix <- load_single_merge_labels(colnames(dataset), data_path,
-                                           size = "_comp1_DE")
+                                           size = "comp1")
   create_summary_figures(label_matrix,
                          file.path(result_path, "comp1"),
                          file.path(output_dir, "DE", "comp1"), 2
   )
   ## Comp2
   label_matrix <- load_single_merge_labels(colnames(dataset), data_path,
-                                           size = "_comp2_DE")
+                                           size = "comp2")
   create_summary_figures(label_matrix,
                          file.path(result_path, "comp2"),
                          file.path(output_dir, "DE", "comp2"), 2
   )
   ## Comp3
   label_matrix <- load_single_merge_labels(colnames(dataset), data_path,
-                                           size = "_comp3_DE")
+                                           size = "comp3")
   create_summary_figures(label_matrix,
                          file.path(result_path, "comp3"),
                          file.path(output_dir, "DE", "comp3"), 2
@@ -360,21 +360,21 @@ main_single_merge <- function(
   # Dist
   ## Comp1
   label_matrix <- load_single_merge_labels(colnames(dataset), data_path,
-                                           size = "_comp1_Dist", type = "Dist")
+                                           size = "comp1", type = "Dist")
   create_summary_figures(label_matrix,
                          file.path(result_path, "comp1"),
                          file.path(output_dir, "Dist", "comp1"), 2
   )
   ## Comp2
   label_matrix <- load_single_merge_labels(colnames(dataset), data_path,
-                                           size = "_comp2_Dist", type = "Dist")
+                                           size = "comp2", type = "Dist")
   create_summary_figures(label_matrix,
                          file.path(result_path, "comp"),
                          file.path(output_dir, "Dist", "comp2"), 2
   )
   ## Comp3
   label_matrix <- load_single_merge_labels(colnames(dataset), data_path,
-                                           size = "_comp3_Dist", type = "Dist")
+                                           size = "comp3", type = "Dist")
   create_summary_figures(label_matrix,
                          file.path(result_path, "comp3"),
                          file.path(output_dir, "Dist", "comp3"), 2
