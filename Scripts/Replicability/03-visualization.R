@@ -341,21 +341,21 @@ main_single_merge <- function(
                                            size = "comp1")
   print(colnames(label_matrix))
   create_summary_figures(label_matrix,
-                         file.path(result_path, "comp1"),
+                         file.path(result_path, "comp1_DE"),
                          file.path(output_dir, "DE", "comp1"), 2
   )
   ## Comp2
   label_matrix <- load_single_merge_labels(colnames(dataset), data_path,
                                            size = "comp2")
   create_summary_figures(label_matrix,
-                         file.path(result_path, "comp2"),
+                         file.path(result_path, "comp2_DE"),
                          file.path(output_dir, "DE", "comp2"), 2
   )
   ## Comp3
   label_matrix <- load_single_merge_labels(colnames(dataset), data_path,
                                            size = "comp3")
   create_summary_figures(label_matrix,
-                         file.path(result_path, "comp3"),
+                         file.path(result_path, "comp3_DE"),
                          file.path(output_dir, "DE", "comp3"), 2
   )
   # Dist
@@ -363,21 +363,21 @@ main_single_merge <- function(
   label_matrix <- load_single_merge_labels(colnames(dataset), data_path,
                                            size = "comp1", type = "Dist")
   create_summary_figures(label_matrix,
-                         file.path(result_path, "comp1"),
+                         file.path(result_path, "comp1_Dist"),
                          file.path(output_dir, "Dist", "comp1"), 2
   )
   ## Comp2
   label_matrix <- load_single_merge_labels(colnames(dataset), data_path,
                                            size = "comp2", type = "Dist")
   create_summary_figures(label_matrix,
-                         file.path(result_path, "comp"),
+                         file.path(result_path, "comp2_Dist"),
                          file.path(output_dir, "Dist", "comp2"), 2
   )
   ## Comp3
   label_matrix <- load_single_merge_labels(colnames(dataset), data_path,
                                            size = "comp3", type = "Dist")
   create_summary_figures(label_matrix,
-                         file.path(result_path, "comp3"),
+                         file.path(result_path, "comp3_Dist"),
                          file.path(output_dir, "Dist", "comp3"), 2
   )
 }
