@@ -8,7 +8,7 @@
 echo "baron"
 loc="/scratch/users/singlecell/Pancreas/RawData/baron.rds"
 out="/scratch/users/singlecell/Pancreas/ProcessedData/baron_filt.rds"
-  meta="/accounts/projects/epurdom/singlecell/Pancreas/Data/Baron/baron_meta.csv"
+meta="/accounts/projects/epurdom/singlecell/Pancreas/Data/Baron/baron_meta.csv"
 Rscript --verbose  1-filtering.R -l $loc -o $out -c 5 -m $meta > 1-baron.out 2>&1
 
 # echo "muraro"

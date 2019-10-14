@@ -29,6 +29,10 @@ option_list <- list(
   make_option(c("-p", "--plots"),
               action = "store", default = NA, type = "character",
               help = "Location of the visual output. Default to [default %default], no output"
+  ),
+  make_option(c("-m", "--meta"),
+              action = "store", default = NA, type = "character",
+              help = "Location of metadata"
   )
 )
 
@@ -82,6 +86,7 @@ zinbWs <- lapply(zinbDims, function(zinbDim) {
   return(zinb)
 })
 
+ref_clusters <- read.csv(opt$m)$cell_type1
 
 for (i in 1:length(zinbWs)) {
   type <- paste0("zinb-K", zinbDims[i])
@@ -91,9 +96,10 @@ for (i in 1:length(zinbWs)) {
   if (!is.na(opt$p)) {
     print("....t-SNE")
     TNSE <- Rtsne(zinbW, initial_dims = min(50, zinbDims[i]))
-    df <- data.frame(x = TNSE$Y[, 1], y = TNSE$Y[, 2])
-    p <- ggplot(df, aes(x = x, y = y)) +
-      geom_point(size = .1, alpha = .3) +
+    df <- data.frame(x = TNSE$Y[, 1], y = TNSE$Y[, 2],
+                     col = ref_clusters)
+    p <- ggplot(df, aes(x = x, y = y, col = col)) +
+      geom_point(size = .4, alpha = .3) +
       theme_classic() +
       labs(x = "dim1", y = "dim2")
     ggsave(paste0(opt$p, "_K_", zinbDims[i], ".png"), p)
