@@ -5,11 +5,11 @@ suppressPackageStartupMessages({
 
 # Helper functions ----
 load_data <- function() {
-  readRDS(here("data", "full_data.rds"))
+  readRDS(here("Data", "full_data.rds"))
 }
 
 # Load dune data ----
-load_Dune_labels <- function(cell_names, data_path = here("data"),
+load_Dune_labels <- function(cell_names, data_path = here("Data"),
                              size = "") {
 
   input_dir <- file.path(data_path, "Dune")
@@ -30,7 +30,7 @@ load_Dune_labels <- function(cell_names, data_path = here("data"),
 
 # Load hierarchical ----
 
-load_single_merge_labels <- function(cell_names, data_path = here("data"),
+load_single_merge_labels <- function(cell_names, data_path = here("Data"),
                                      size = "", type = "DE") {
   input_dir <- file.path(data_path, "Dune")
   result <- bind_rows(
@@ -88,7 +88,7 @@ read_single_method <- function(filename) {
   return(result %>% select(cells, colnames(result)))
 }
 
-load_single_method <- function(cell_names, data_path = here("data"), method) {
+load_single_method <- function(cell_names, data_path = here("Data"), method) {
   input_dir <- file.path(data_path, "singleMethod")
   result <- bind_rows(
     baron = read_single_method(
@@ -119,14 +119,14 @@ load_single_method <- function(cell_names, data_path = here("data"), method) {
   return(as.data.frame(result))
 }
 
-load_single_seurat_labels <- function(cell_names, data_path = here("data")) {
+load_single_seurat_labels <- function(cell_names, data_path = here("Data")) {
   return(load_single_method(cell_names, data_path, method = "Seurat"))
 }
 
-load_single_sc3_labels <- function(cell_names, data_path = here("data")) {
+load_single_sc3_labels <- function(cell_names, data_path = here("Data")) {
   return(load_single_method(cell_names, data_path, method = "SC3"))
 }
 
-load_single_monocle_labels <- function(cell_names, data_path = here("data")) {
+load_single_monocle_labels <- function(cell_names, data_path = here("Data")) {
   return(load_single_method(cell_names, data_path, method = "Monocle"))
 }

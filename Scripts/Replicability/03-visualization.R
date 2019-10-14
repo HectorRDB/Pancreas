@@ -302,8 +302,8 @@ plot_clusters_vs_mapped <- function(results) {
 
 # Main functions ----
 main_all_Dunes <- function(
-  result_path = here("data", "Replicability", "mn_results", "Dune"),
-  output_dir = here("data", "Replicability", "Dune")) 
+  result_path = here("Data", "Replicability", "mn_results", "Dune"),
+  output_dir = here("Data", "Replicability", "Dune")) 
   {
   data_path <- here("Data")
   dataset <- load_data()
@@ -329,8 +329,8 @@ main_all_Dunes <- function(
 }
 
 main_single_merge <- function(
-  result_path = here("data", "Replicability", "mn_results", "singleTree"),
-  output_dir = here("data", "Replicability")) 
+  result_path = here("Data", "Replicability", "mn_results", "singleTree"),
+  output_dir = here("Data", "Replicability")) 
   {
   data_path = here("Data")
   dataset <- load_data()
@@ -382,8 +382,8 @@ main_single_merge <- function(
 }
 
 main_single_method_all <- function(
-  result_path = here("data", "Replicability", "mn_results", "SingleMethod"),
-  output_dir = here("data", "Replicability", "SingleMethod")) 
+  result_path = here("Data", "Replicability", "mn_results", "SingleMethod"),
+  output_dir = here("Data", "Replicability", "SingleMethod")) 
   {
   
   dataset <- load_data()
