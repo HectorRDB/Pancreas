@@ -14,6 +14,10 @@ option_list <- list(
               action = "store", default = 50, type = "character",
               help = "The cutoff for filtering"
   ),
+  make_option(c("-r", "--reads"),
+              action = "store", default = 50, type = "character",
+              help = "The read cutoff for filtering"
+  ),
   make_option(c("-m", "--meta"),
               action = "store", default = NA, type = "character",
               help = "Where to store the metadata"
@@ -52,7 +56,7 @@ cat("Preparing the data", "\n")
 counts <- counts(Sce)
 counts <- as.matrix(counts)
 print(dim(counts))
-filt <- rowSums(counts >= opt$c) >= opt$c
+filt <- rowSums(counts >= opt$r) >= opt$c
 print(sum(filt))
 print(sum(counts[filt, ]) / sum(counts))
 Sce <- Sce[filt, ]
