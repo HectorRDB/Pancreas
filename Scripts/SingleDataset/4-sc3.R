@@ -40,6 +40,7 @@ library(SingleCellExperiment)
 sce <- readRDS(file = loc)
 rowData(sce)$feature_symbol <- rownames(sce)
 counts(sce) <- as.matrix(counts(sce))
+logcounts(sce) <- as.matrix(logcounts(sce))
 sce <- sc3_estimate_k(sce)
 K <- metadata(sce)$sc3$k_estimation
 
