@@ -43,6 +43,7 @@ sce <- readRDS(file = loc)
 rowData(sce)$feature_symbol <- rownames(sce)
 sce <- sc3_estimate_k(sce)
 K <- metadata(sce)$sc3$k_estimation
+print(paste0("The optimal number of clusters defined by sc3 is ", K))
 ks <- 10:(K + 10)
 names(ks) <- ks - K
 sc3 <- map_df(ks, function(k){

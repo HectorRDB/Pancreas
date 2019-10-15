@@ -6,6 +6,6 @@
 #SBATCH --nodes=1
 
 echo "segerstolpe"
-loc="/scratch/users/singlecell/Pancreas/ProcessedData/segerstolpe_filt.rds"
+loc="/scratch/users/singlecell/Pancreas/ProcessedData/segerstolpe_filt_norm.rds"
 out="/accounts/projects/epurdom/singlecell/Pancreas/Data/singleMethod/segerstolpe_SC3.csv"
-Rscript --verbose  3-sc3.R -n 32 -l $loc -o $out > 3-segerstolpe.out 2>&1
+Rscript --verbose  4-sc3.R -n 32 -l $loc -o $out > 4-segerstolpe.out 2>&1

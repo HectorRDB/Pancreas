@@ -8,7 +8,8 @@
 echo "baron"
 loc="/scratch/users/singlecell/Pancreas/ProcessedData/baron_filt.rds"
 out="/accounts/projects/epurdom/singlecell/Pancreas/Data/singleMethod/baron_Seurat.csv"
-Rscript --verbose  4-seurat.R -l $loc -o $out > 4-baron.out 2>&1
+preproc="/scratch/users/singlecell/Pancreas/ProcessedData/baron_filt_norm.rds"
+Rscript --verbose  3-seurat.R -l $loc -o $out -p $preproc > 3-baron.out 2>&1
 
 # echo "muraro"
 # loc="/scratch/users/singlecell/Pancreas/ProcessedData/muraro_filt.rds"
@@ -18,4 +19,5 @@ Rscript --verbose  4-seurat.R -l $loc -o $out > 4-baron.out 2>&1
 echo "segerstolpe"
 loc="/scratch/users/singlecell/Pancreas/ProcessedData/segerstolpe_filt.rds"
 out="/accounts/projects/epurdom/singlecell/Pancreas/Data/singleMethod/segerstolpe_Seurat.csv"
-Rscript --verbose  4-seurat.R -l $loc -o $out > 4-segerstolpe.out 2>&1
+preproc="/scratch/users/singlecell/Pancreas/ProcessedData/segerstolpe_filt_norm.rds"
+Rscript --verbose  3-seurat.R -l $loc -o $out -p $preproc > 3-segerstolpe.out 2>&1

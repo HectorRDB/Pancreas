@@ -9,6 +9,10 @@ option_list <- list(
   make_option(c("-l", "--location"),
               action = "store", default = NA, type = "character",
               help = "The location of the data"
+  ),
+  make_option(c("-p", "--preproc"),
+              action = "store", default = NA, type = "character",
+              help = "Where to store the normalized data"
   )
 )
 
@@ -39,8 +43,10 @@ sce <- readRDS(file = loc)
 sSeurat <- CreateSeuratObject(counts = assays(sce)$counts, project = 'allen40K')
 sSeurat <- NormalizeData(object = sSeurat, normalization.method = "LogNormalize")
 sSeurat <- FindVariableFeatures(object = sSeurat, mean.function = ExpMean,
-                                dispersion.function = LogVMR, do.plot = T)
-sSeurat <- ScaleData(object = sSeurat, vars.to.regress = "nCount_RNA")
+                                dispersion.function = LogVMR, do.plot = F)
+sSeurat <- ScaleData(object = sSeurat, vars.to.regress = c("nCount_RNA", "human"))
+sce <- as.SingleCellExperiment(sSeurat)
+saveRDS(sce, opt$p)
 sSeurat <- RunPCA(object = sSeurat, ndims.print = 1, npcs = 100)
 
 # Run clustering ----
