@@ -29,9 +29,12 @@ suppressMessages(
   suppressWarnings(sapply(libs, require, character.only = TRUE))
 )
 rm(libs)
-Dune <- lapply(1:3, function(i){
-  read_csv(here("Data", "Dune", paste0(params$dataset, "_comp", i, "_Dune.csv")))
-})
+source(here("Rmd", "helper.R"))
+ref_clusters <- read.csv(here("data", params$dataset,
+                              paste0(params$dataset, "_meta.csv"))) %>%
+  arrange(X) %>%
+  `$`("cell_type1") %>%
+  as.numeric()
 ```
 
 # EDA
@@ -48,103 +51,25 @@ rasterImage(readPNG(here("Figures", "EDA", plots[1])), 0, 0, .5, 1)
 rasterImage(readPNG(here("Figures", "EDA", plots[length(plots)])), 0.5, 0, 1, 1)
 ```
 
+# 3 comparisons
+## Comp1
 
-# Reduction in the number of clusters
-
-```{r Imp no allen}
-prePost <- function(df) {
-  n_clust <- map_df(df, n_distinct) %>%
-    select(-cells) %>%
-    pivot_longer(everything(), names_to = "method", values_to = "n_clus") %>%
-    dplyr::mutate(step = word(method, 2, sep = "-"),
-                  method = word(method, 1, sep = "-")) %>%
-    filter(step %in% c("Initial", "Final")) %>%
-    dplyr::mutate(step = factor(step, levels = c("Initial", "Final")))
-  p <- ggplot(n_clust, aes(x = method, y = n_clus, fill = step)) +
-    geom_bar(stat = "identity", position = "dodge") +
-    theme_classic() +
-    scale_fill_viridis_d(option = "E") +
-    labs(x = "Clustering Methods", y = "Number of clusters", fill = "") +
-    ggtitle("Reduction in number of clusters with ARI merging")
-  return(p)
-}
-prePost(Dune[[1]])
+```{r comp1}
+walk(plot_all(dataset = params$dataset, comp = "comp1", ref = ref_clusters),
+     print)
 ```
 
-# Improvement in ARI
+## Comp2
 
-```{r ARI imp no allen cell}
-ARI <- function(df) {
-  keep <- str_detect(colnames(df), "Initial") |
-          str_detect(colnames(df), "Final")
-  df <- df[, keep]
-  plotARIs(df[, 1:3])
-  plot_grid(plotARIs(df[, 1:3]),
-            plotARIs(df[, 4:6]))
-}
-walk(1:3, function(i){
-  p <- ARI(Dune[[i]]) +
-    ggtitle(paste0("Comp ", i))
-  print(p)
-})
+```{r comp2}
+walk(plot_all(dataset = params$dataset, comp = "comp2", ref = ref_clusters),
+     print)
 ```
 
-# Comparison with the reference
+## Comp3
 
-```{r comp cell}
-# Ref clusters
-ref_clusters <- read.csv(here("data", params$dataset,
-                              paste0(params$dataset, "_meta.csv"))) %>%
-  arrange(X) %>%
-  `$`("cell_type1") %>%
-  as.numeric()
-
-# Single Methods
-Monocle <- read.csv(here("data", "SingleMethod", paste0(params$dataset, "_Monocle.csv"))) %>%
-  select(-X)
-colnames(Monocle) <- paste0("Monocle_", str_remove(colnames(Monocle), "^k_"))
-colnames(Monocle)[ncol(Monocle)] <- "cells"
-sc3 <- read.csv(here("data", "SingleMethod", paste0(params$dataset, "_SC3.csv"))) %>%
-  select(-X)
-colnames(sc3) <- paste0("sc3_",
-                        str_remove(colnames(sc3), "X") %>% str_replace("\\.", "-"))
-colnames(sc3)[ncol(sc3)] <- "cells"
-Seurat <- read.csv(here("data", "SingleMethod", paste0(params$dataset, "_Seurat.csv"))) %>%
-  select(-X)
-colnames(Seurat) <- paste0("Seurat_", str_remove(colnames(Seurat), "^X"))
-colnames(Seurat)[ncol(Seurat)] <- "cells"
-  
-singles <- full_join(sc3, Seurat) %>% full_join(Monocle) %>%
-  arrange(cells) %>% select(-cells) %>%
-  map_df(., adjustedRandIndex, y = ref_clusters) %>%
-  pivot_longer(everything(), names_to = "method", values_to = "ARI") %>%
-  dplyr::mutate(clus_method = word(method, 1, sep = "_"),
-                level = word(method, 2, sep = "_"))
-rm(sc3, Monocle, Seurat)
-
-walk(Dune, function(df){
-  final <- df %>%
-    arrange(cells) %>%
-    select(-cells) %>%
-    lapply(., adjustedRandIndex, y = ref_clusters) %>%
-    as.data.frame() %>%
-    pivot_longer(everything(), names_to = "clus_method", values_to = "ARI")
-  initial <- final %>%
-    filter(str_detect(clus_method, "Initial")) %>%
-    dplyr::mutate(clus_method = word(clus_method, 1, sep = "\\."))
-  final <- final %>%
-    filter(str_detect(clus_method, "Final")) %>%
-    dplyr::mutate(clus_method = word(clus_method, 1, sep = "\\."))
-  
-  p <- ggplot(singles, aes(x = clus_method, y = ARI)) +
-    geom_violin() +
-    theme_classic() +
-    geom_point(
-      data = bind_rows("Final" = final, "Initial" = initial, .id = "step"),
-      aes(col = step)) +
-    scale_color_brewer(type = "qual")
-  print(p)
-})
-
+```{r comp3}
+walk(plot_all(dataset = params$dataset, comp = "comp3", ref = ref_clusters),
+     print)
 ```
 
