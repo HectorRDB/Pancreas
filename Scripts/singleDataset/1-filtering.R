@@ -42,6 +42,11 @@ library(SingleCellExperiment)
 # Load data per se ----
 
 Sce <- readRDS(loc)
+Sce$human <- word(colnames(Sce), 1, sep = "_") %>% unlist()
+if (str_detect(loc, "segerstolpe")) {
+  Sce <- Sce[, Sce$cell_quality == "OK"]
+  Sce <- Sce[, Sce$human != "AZ"]
+}
 write.csv(colData(Sce), opt$m)
 cat("Preparing the data", "\n")
 counts <- counts(Sce)

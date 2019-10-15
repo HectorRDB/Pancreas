@@ -47,7 +47,7 @@ ks <- 10:(K + 10)
 names(ks) <- ks - K
 sc3 <- map_df(ks, function(k){
   SC3 <- sc3(sce, ks = k, svm_max = ncol(sce) + 1, biology = FALSE,
-             n_cores = as.numeric(opt$n))
+             n_cores = as.numeric(opt$n), rand_seed = 786907)
   SC3 <- colData(SC3)[, paste0("sc3_", k, "_clusters")] %>% as.numeric()
   return(SC3)
 })

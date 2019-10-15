@@ -70,7 +70,7 @@ vars <- matrixStats::rowVars(logcounts(sce))
 cat("Running with K = 0 on the full data\n")
 cat("Number of cores:", NCORES, "\n")
 cat("Time to run zinbwave (seconds):\n")
-print(system.time(zinb0 <- zinbwave(sce)))
+print(system.time(zinb0 <- zinbwave(sce, X = "~human")))
 
 ind <- vars > sort(vars,decreasing = TRUE)[1000]
 whichGenes <- rownames(sce)[ind]
@@ -82,7 +82,7 @@ zinbWs <- lapply(zinbDims, function(zinbDim) {
   cat("Running with K = ", zinbDim, " on the filtered data\n")
   cat("Number of cores:", NCORES, "\n")
   cat("Time to run zinbwave (seconds):\n")
-  print(system.time(zinb <- zinbwave(sceVar, K = zinbDim)))
+  print(system.time(zinb <- zinbwave(sceVar, K = zinbDim, X = "~human")))
   return(zinb)
 })
 
