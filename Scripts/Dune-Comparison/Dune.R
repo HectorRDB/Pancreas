@@ -117,6 +117,7 @@ print(system.time(
   merger <- Dune(clusMat = clusMat, nCores = opt$n)
 ))
 cat("Finished Consensus Merge\n")
+saveRDS(merger,  paste0(output, "_merger.rds"))
 
 # Save the matrix with all the consensus steps ----
 print("...Initial")
