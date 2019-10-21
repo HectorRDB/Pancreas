@@ -70,7 +70,9 @@ vars <- matrixStats::rowVars(logcounts(sce))
 cat("Running with K = 0 on the full data\n")
 cat("Number of cores:", NCORES, "\n")
 cat("Time to run zinbwave (seconds):\n")
-print(system.time(zinb0 <- zinbwave(sce, X = "~human")))
+if (ncol(sce) <- 5000) {
+  print(system.time(zinb0 <- zinbwave(sce, X = "~human")))  
+}
 
 ind <- vars > sort(vars,decreasing = TRUE)[1000]
 whichGenes <- rownames(sce)[ind]
