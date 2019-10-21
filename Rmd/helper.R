@@ -156,6 +156,7 @@ plot_all <- function(dataset, comp, ref) {
   p3 <- ARItrend(Dune)
   
   p4 <- plotComp(dataset, comp, ref)
+  return(list(p1, p2, p3, p4))
 }
 
 plotComp <- function(dataset, comp, ref) {
