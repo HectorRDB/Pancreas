@@ -121,7 +121,7 @@ saveRDS(merger,  paste0(output, "_merger.rds"))
 
 # Save the matrix with all the consensus steps ----
 print("...Initial")
-initialMat <- merger$initalMat
+initialMat <- merger$initialMat
 initialMat <- as.matrix(initialMat) 
 
 print("...Final consensus")
