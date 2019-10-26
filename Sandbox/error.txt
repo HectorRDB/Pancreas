@@ -1,0 +1,23 @@
+Rsec2 <- makeDendrogram(Rsec, whichCluster = clustering)
+Error in .local(x, ...) : Tree is reticulated.
+In addition: Warning message:
+In rbind(from$edge[tip.idx, ], c(0, root.node), from$edge[int.idx,  :
+  number of columns of result is not a multiple of vector length (arg 2)
+Error in .convertToPhyClasses(newPhylo, "phylo4") : 
+  coding error -- could not convert from phylo to phylo4 object. Reported error:Error in .local(x, ...) : Tree is reticulated.
+
+------------------------------------------------------------------------------------
+
+10: stop("coding error -- could not convert from phylo to phylo4 object. Reported error:", 
+        x)
+9: .convertToPhyClasses(newPhylo, "phylo4")
+8: .makeSampleDendro(x, clusterDendro = clusterD, cl = .convertToNum(cluster), 
+       type = c("mat"), unassignedSamples = unassigned, sampleEdgeLength = 0, 
+       outbranchLength = 1, calculateSample = calculateSample)
+7: .local(x, ...)
+6: makeDendrogram(
+....
+4: do.call("makeDendrogram", c(list(x = dat, cluster = cl, calculateSample = TRUE, 
+       unassignedSamples = unassignedSamples), passedArgs))
+3: .local(x, ...)
+2: makeDendrogram(Rsec, whichCluster = clustering)
