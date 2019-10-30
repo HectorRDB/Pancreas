@@ -58,11 +58,16 @@ for (RESOLUTION in seq(from = 0.3, to = 2.5, by = .1)) {
   clusters <- unique(Idents(sSeurat_star))
   for (cluster in clusters) {
     print(paste0("...", cluster))
-    sSeurat_loc <- sSeurat[, Idents(sSeurat_star) == cluster]
-    sSeurat_loc <- FindNeighbors(sSeurat_loc, dims = 1:50)
-    sSeurat_loc <- FindClusters(sSeurat_loc, resolution = RESOLUTION)
-    cluster_labels[Idents(sSeurat_star) == cluster] <- 
-      paste0(cluster, "_", Idents(sSeurat_loc))
+    keep <- Idents(sSeurat_star) == cluster
+    if (sum(keep) > 1) {
+      sSeurat_loc <- sSeurat[, ]
+      sSeurat_loc <- FindNeighbors(sSeurat_loc, dims = 1:50)
+      sSeurat_loc <- FindClusters(sSeurat_loc, resolution = RESOLUTION)
+      cluster_labels[keep] <- paste0(cluster, "_", Idents(sSeurat_loc))  
+    } else {
+      cluster_labels[keep] <- paste0(cluster, "_", 0)  
+    }
+    
   }
   clusterMatrix <- cbind(clusterMatrix, cluster_labels)
   colnames(clusterMatrix)[ncol(clusterMatrix)] <- RESOLUTION
