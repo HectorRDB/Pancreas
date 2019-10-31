@@ -158,7 +158,6 @@ write_csv(x = as.data.frame(mat), path = paste0(output, "_Dune.csv"))
 # Do hierarchical merging with fraction of DE----
 Rsec <- readRDS(opt$r)
 
-sc3 <- as.character(sc3)
 for (clustering in c("sc3", "Monocle", "Seurat")) {
   Rsec <- addClusterings(Rsec, get(clustering), clusterLabels = clustering)
 }
