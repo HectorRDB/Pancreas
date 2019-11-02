@@ -406,6 +406,33 @@ main_single_method_all <- function(
                          file.path(output_dir, "Seurat"), 2)
 }
 
+main_all_Garbage <- function(
+  result_path = here("Data", "Replicability", "mn_results", "Garbage"),
+  output_dir = here("Data", "Replicability", "Garbage")) 
+{
+  data_path <- here("Data")
+  dataset <- load_data()
+  
+  # Comp1
+  label_matrix <- load_Dune_labels(colnames(dataset), data_path, size = "1-bad")
+  create_summary_figures(label_matrix,
+                         file.path(result_path, "bad_1"),
+                         file.path(output_dir, "bad_1"), 2
+  )
+  # Comp2
+  label_matrix <- load_Dune_labels(colnames(dataset), data_path, size = "2-bad")
+  create_summary_figures(label_matrix,
+                         file.path(result_path, "bad_2"),
+                         file.path(output_dir, "bad_2"), 2
+  )
+  # Comp3
+  label_matrix <- load_Dune_labels(colnames(dataset), data_path, size = "3-bad")
+  create_summary_figures(label_matrix,
+                         file.path(result_path, "bad_3"),
+                         file.path(output_dir, "bad_3"), 2
+  )
+}
+
 main <- function() {
   print("all Dunes")
   main_all_Dunes()
@@ -413,6 +440,8 @@ main <- function() {
   main_single_method_all()
   print("single merges")
   main_single_merge()
+  print("Garbage in")
+  main_all_Garbage()
 }
 
 if (!interactive()) {

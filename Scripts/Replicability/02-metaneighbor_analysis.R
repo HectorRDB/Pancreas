@@ -130,6 +130,22 @@ analyze_single_methods <- function(data_path = here("Data"),
   analyze_data(dataset, labels, output_dir)
 }
 
+# Garbage in ----
+analyze_Garbage <- function(data_path = here("Data"),
+                          output_dir = here("Data", "Replicability",
+                                            "mn_results", "Garbage")) {
+  dataset <- load_data()
+  # Dune comp1
+  labels <- load_garbage_labels(colnames(dataset), data_path, size = "1-bad")
+  analyze_data(dataset, labels, paste0(output_dir, "/bad_1"))
+  # Dune comp2
+  labels <- load_garbage_labels(colnames(dataset), data_path, size = "2-bad")
+  analyze_data(dataset, labels, paste0(output_dir, "/bad_2"))
+  # Dune comp3
+  labels <- load_garbage_labels(colnames(dataset), data_path, size = "3-bad")
+  analyze_data(dataset, labels, paste0(output_dir, "/bad_3"))
+}
+
 ## To run ----
 main <- function() {
   print("single Method smart")
@@ -138,6 +154,8 @@ main <- function() {
   analyze_single_merge()
   print("single All Dunes")
   analyze_Dunes()
+  print("Main Garbage")
+  analyze_Garbage()
 }
 
 if (!interactive()) {

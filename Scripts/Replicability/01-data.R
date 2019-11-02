@@ -130,3 +130,23 @@ load_single_sc3_labels <- function(cell_names, data_path = here("Data")) {
 load_single_monocle_labels <- function(cell_names, data_path = here("Data")) {
   return(load_single_method(cell_names, data_path, method = "Monocle"))
 }
+
+# Load garbage ----
+load_garbage_labels <- function(cell_names, data_path = here("Data"),
+                             size = "") {
+  
+  input_dir <- file.path(data_path, "Garbage")
+  label_matrix <- bind_rows(
+    baron = read.csv(
+      file.path(input_dir, paste0("baron_", size, "_Dune.csv"))),
+    segerstolpe = read.csv(
+      file.path(input_dir, paste0("segerstolpe_", size, "_Dune.csv"))),
+    .id = "dataset"
+  )
+  
+  # reorder cells to match data
+  row_match <- match(cell_names, label_matrix$cells)
+  label_matrix <- label_matrix[row_match, ]
+  
+  return(label_matrix)
+}
