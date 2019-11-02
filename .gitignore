@@ -6,3 +6,4 @@ TODO.*
 sandbox/*.RData
 */*/.Rprofile
 *.out
+*.Rout
