@@ -25,14 +25,6 @@ option_list <- list(
   make_option(c("-m", "--monocle"),
               action = "store", default = NA, type = "character",
               help = "Monocle parameter"
-  ),
-  make_option(c("-r", "--rsec"),
-              action = "store", default = NA, type = "character",
-              help = "Location of the Rsec object"
-  ),
-  make_option(c("-p", "--plot"),
-              action = "store", default = "None", type = "character",
-              help = "Where and if to store plot"
   )
 )
 
