@@ -91,7 +91,7 @@ clusMat <- data.frame("sc3" = sc3, "Monocle" = Monocle, "Seurat" = Seurat)
 rownames(clusMat) <- Names  
 
 # Do the consensus clustering with one additional garbage clustering ----
-n_clus <- mean(n_distinct(sc3), n_distinct(seurat), n_distinct(Monocle))
+n_clus <- mean(n_distinct(sc3), n_distinct(Seurat), n_distinct(Monocle))
 clusMat$garbage <- sample(n_clus, size = nrow(clusMat), replace = TRUE)
 print(paste0("Number of cores: ", opt$n))
 print(system.time(
@@ -138,7 +138,7 @@ colnames(mat) <- c("cells",
 write_csv(x = as.data.frame(mat), path = paste0(output, "_1-bad.csv"))
 
 # Do the consensus clustering with two additional garbage clustering ----
-n_clus <- mean(n_distinct(sc3), n_distinct(seurat), n_distinct(Monocle))
+n_clus <- mean(n_distinct(sc3), n_distinct(Seurat), n_distinct(Monocle))
 clusMat$garbage1 <- sample(n_clus, size = nrow(clusMat), replace = TRUE)
 clusMat$garbage2 <- sample(n_clus, size = nrow(clusMat), replace = TRUE)
 print(paste0("Number of cores: ", opt$n))
@@ -186,7 +186,7 @@ colnames(mat) <- c("cells",
 write_csv(x = as.data.frame(mat), path = paste0(output, "_2-bad.csv"))
 
 # Do the consensus clustering with two additional garbage clustering ----
-n_clus <- mean(n_distinct(sc3), n_distinct(seurat), n_distinct(Monocle))
+n_clus <- mean(n_distinct(sc3), n_distinct(Seurat), n_distinct(Monocle))
 clusMat$garbage1 <- sample(n_clus, size = nrow(clusMat), replace = TRUE)
 clusMat$garbage2 <- sample(n_clus, size = nrow(clusMat), replace = TRUE)
 clusMat$garbage3 <- sample(n_clus, size = nrow(clusMat), replace = TRUE)
