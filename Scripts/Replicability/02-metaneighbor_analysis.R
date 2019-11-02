@@ -132,8 +132,8 @@ analyze_single_methods <- function(data_path = here("Data"),
 
 # Garbage in ----
 analyze_Garbage <- function(data_path = here("Data"),
-                          output_dir = here("Data", "Replicability",
-                                            "mn_results", "Garbage")) {
+                            output_dir = here("Data", "Replicability",
+                                              "mn_results", "Garbage")) {
   dataset <- load_data()
   # Dune comp1
   labels <- load_garbage_labels(colnames(dataset), data_path, size = "1-bad")

@@ -138,9 +138,9 @@ load_garbage_labels <- function(cell_names, data_path = here("Data"),
   input_dir <- file.path(data_path, "Garbage")
   label_matrix <- bind_rows(
     baron = read.csv(
-      file.path(input_dir, paste0("baron_", size, "_Dune.csv"))),
+      file.path(input_dir, paste0("baron_", size, ".csv"))),
     segerstolpe = read.csv(
-      file.path(input_dir, paste0("segerstolpe_", size, "_Dune.csv"))),
+      file.path(input_dir, paste0("segerstolpe_", size, ".csv"))),
     .id = "dataset"
   )
   
