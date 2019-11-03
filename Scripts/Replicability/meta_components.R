@@ -1,32 +1,32 @@
 source(here("Scripts", "Replicability", "utility.R"))
 source(here("Scripts", "Replicability", "graph_visualization.R"))
 
-analyze_components <- function(dataset, labels, output_prefix,
-                               auroc_threshold = c(0.6)) {
-  is_nonzero_cell <- Matrix::colSums(assay(dataset)) > 0
-  dataset <- dataset[, is_nonzero_cell]
-  labels <- labels[is_nonzero_cell]
-
-  best_hits <- compute_best_hits(dataset, labels)
-
-  for (threshold in auroc_threshold) {
-    output_dir <- paste0(output_prefix, threshold * 100)
-    dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
-
-    write.table(best_hits, file.path(output_dir, "best_hits.txt"))
-
-    components <- extract_components(best_hits, threshold)
-    plot_components(best_hits, components$modules, output_dir)
-    write_component_summary(components, output_dir)
-    export_filtered_best_hits(best_hits, components$modules, output_dir)
-
-    graph <- make_directed_graph(best_hits, threshold, 1)
-    graph <- color_graph(graph, paste(dataset$study_id, labels, sep = "|"))
-    pdf(file.path(output_dir, "graph_visualization.pdf"))
-    plot_directed_graph(graph, 1)
-    dev.off()
-  }
-}
+# analyze_components <- function(dataset, labels, output_prefix,
+#                                auroc_threshold = c(0.6)) {
+#   is_nonzero_cell <- Matrix::colSums(assay(dataset)) > 0
+#   dataset <- dataset[, is_nonzero_cell]
+#   labels <- labels[is_nonzero_cell]
+# 
+#   best_hits <- compute_best_hits(dataset, labels)
+# 
+#   for (threshold in auroc_threshold) {
+#     output_dir <- paste0(output_prefix, threshold * 100)
+#     dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
+# 
+#     write.table(best_hits, file.path(output_dir, "best_hits.txt"))
+# 
+#     components <- extract_components(best_hits, threshold)
+#     plot_components(best_hits, components$modules, output_dir)
+#     write_component_summary(components, output_dir)
+#     export_filtered_best_hits(best_hits, components$modules, output_dir)
+# 
+#     graph <- make_directed_graph(best_hits, threshold, 1)
+#     graph <- color_graph(graph, paste(dataset$study_id, labels, sep = "|"))
+#     pdf(file.path(output_dir, "graph_visualization.pdf"))
+#     plot_directed_graph(graph, 1)
+#     dev.off()
+#   }
+# }
 
 compute_best_hits <- function(dataset, labels, one_vs_one = TRUE) {
   normalized_data <- normalize_cols(assay(dataset))
