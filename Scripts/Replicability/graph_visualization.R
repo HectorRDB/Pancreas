@@ -21,7 +21,7 @@ color_graph <- function(graph, full_label_list) {
   igraph::V(graph)$label <- get_cell_type(igraph::V(graph)$name)
   igraph::V(graph)$size <- cluster_size_class[igraph::V(graph)$name]
 
-  igraph::E(graph)$width <- igraph::E(graph)$weight
+  # igraph::E(graph)$width <- igraph::E(graph)$weight
   igraph::E(graph)$color <- c("orange", "darkgray")[as.numeric(igraph::E(graph)$weight >= 0.5) + 1]
 
   return(graph)
