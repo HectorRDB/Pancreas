@@ -30,6 +30,9 @@ color_graph <- function(graph, full_label_list) {
 make_vertex_colors <- function(graph) {
   study_ids <- unique(get_study_id(igraph::V(graph)$name))
   result <- RColorBrewer::brewer.pal(n = 8, "Set2")[seq_along(study_ids)]
+  if (length(study_ids) > 8) {
+    result <- RColorBrewer::brewer.pal(n = 12, "Set3")[seq_along(study_ids)]
+  }
   names(result) <- study_ids
   return(result)
 }
