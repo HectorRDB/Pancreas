@@ -414,19 +414,19 @@ main_all_Garbage <- function(
   dataset <- load_data()
   
   # Comp1
-  label_matrix <- load_Dune_labels(colnames(dataset), data_path, size = "1-bad")
+  label_matrix <- load_garbage_labels(colnames(dataset), data_path, size = "1-bad")
   create_summary_figures(label_matrix,
                          file.path(result_path, "bad_1"),
                          file.path(output_dir, "bad_1"), 2
   )
   # Comp2
-  label_matrix <- load_Dune_labels(colnames(dataset), data_path, size = "2-bad")
+  label_matrix <- load_garbage_labels(colnames(dataset), data_path, size = "2-bad")
   create_summary_figures(label_matrix,
                          file.path(result_path, "bad_2"),
                          file.path(output_dir, "bad_2"), 2
   )
   # Comp3
-  label_matrix <- load_Dune_labels(colnames(dataset), data_path, size = "3-bad")
+  label_matrix <- load_garbage_labels(colnames(dataset), data_path, size = "3-bad")
   create_summary_figures(label_matrix,
                          file.path(result_path, "bad_3"),
                          file.path(output_dir, "bad_3"), 2
