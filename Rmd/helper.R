@@ -146,7 +146,7 @@ load_singles <- function(dataset, comp, ref) {
 # Main reports ----
 
 plot_all <- function(dataset, comp, ref) {
-  Dune <- readRDS(here("Data", "Dune", paste0(dataset, "_", comp, ".rds")))
+  Dune <- readRDS(here("Data", "Dune", paste0(dataset, "_", comp, "_merger.rds")))
   p1 <- plotPrePost(Dune)
   p2 <- plot_grid(
     plotARIs(clusMat = Dune$initialMat) + ggtitle("Before Merging"),
