@@ -7,11 +7,9 @@ rm(libs)
 # utils functions ----
 toRank <- function(i) {
   case_when(
-    i == "Initial" ~ 1,
-    i == 33 ~ 2,
-    i == 66 ~ 3,
-    i == 90 ~ 4,
-    i == "Final" ~ 5
+    i == "Initial" ~0,
+    i == "Final" ~ 100,
+    TRUE ~ as.numeric(i)
   )
 }
 
@@ -71,7 +69,7 @@ load_Dist_tree <- function(dataset, comp, ref) {
 
 # With single methods ----
 load_sc3 <- function(dataset, dune) {
-  sc3_init <- dune[, "sc3.Initial"]
+  sc3_init <- dune[, "sc3.00"]
   SC3 <- read.csv(here("Data", "singleMethod",
                        paste0(dataset, "_SC3.csv"))) %>%
     select(-X) %>%
@@ -88,7 +86,7 @@ load_sc3 <- function(dataset, dune) {
 }
 
 load_monocle <- function(dataset, dune) {
-  Monocle_init <- dune[, "Monocle.Initial"]
+  Monocle_init <- dune[, "Monocle.00"]
   Monocle <- read.csv(here("Data", "singleMethod",
                        paste0(dataset, "_Monocle.csv"))) %>%
     select(-X) %>%
@@ -104,7 +102,7 @@ load_monocle <- function(dataset, dune) {
 }
 
 load_seurat <- function(dataset, dune) {
-  Seurat_init <- dune[, "Seurat.Initial"]
+  Seurat_init <- dune[, "Seurat.00"]
   Seurat <- read.csv(here("Data", "singleMethod",
                            paste0(dataset, "_Seurat.csv"))) %>%
     select(-X) %>%
@@ -125,8 +123,8 @@ load_seurat <- function(dataset, dune) {
 }
 
 load_singles <- function(dataset, comp, ref) {
-  dune <- df <- read.csv(here("Data", "Dune",
-                              paste0(dataset, "_", comp, "_Dune.csv"))) %>%
+  dune <- read.csv(here("Data", "Dune",
+                        paste0(dataset, "_", comp, "_Dune.csv"))) %>%
     arrange(cells)
   Seurat <- load_seurat(dataset, dune)
   SC3 <- load_sc3(dataset, dune)
