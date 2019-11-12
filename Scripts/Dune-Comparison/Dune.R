@@ -125,18 +125,21 @@ chars <- c("sc3", "Monocle", "Seurat")
 initialMat <- merger$initialMat
 initialMat <- as.matrix(initialMat) 
 colnames(initialMat) <- paste(chars, "00", sep = "-")
+initialMat <- initialMat[Names, ]
 
 print("...Final consensus")
 currentMat <- merger$currentMat
 currentMat <- as.matrix(currentMat) 
 colnames(currentMat) <- paste(chars, "100", sep = "-")
+currentMat <- currentMat[Names, ]
 
 levels <- seq(from = .05, to = .95, by = .05)
 stopMatrix <- lapply(levels, function(p){
   print(paste0("...Intermediary consensus at ", round(100 * p), "%"))
-  intermediateMat(merger = merger, p = p) %>%
-    as.matrix() %>%
-    return()
+  mat <- intermediateMat(merger = merger, p = p) %>%
+    as.matrix()
+  mat <- mat[Names, ]
+  return(mat)
 }) %>%
   do.call('cbind', args = .)
 
@@ -197,7 +200,7 @@ res <- list()
 for (clustering in c("sc3", "Monocle", "Seurat")) {
   print(clustering)
   n <- n_distinct(get(clustering))
-  cutoffs <- 10:n
+  cutoffs <- 5:n
   Rsec2 <- makeDendrogram(Rsec, whichCluster = clustering)
   Tree <- as.hclust(convertToDendrogram(Rsec2))
   names(cutoffs) <- paste(clustering, n - cutoffs, sep = "_")
