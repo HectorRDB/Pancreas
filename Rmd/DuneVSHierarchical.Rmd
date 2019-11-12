@@ -29,16 +29,15 @@ We have compared three possible starting points for merging the clusters, either
 ```{r}
 toRank <- function(i) {
   case_when(
-    i == "Initial" ~ 1,
-    i == 33 ~ 2,
-    i == 66 ~ 3,
-    i == 90 ~ 4,
-    i == "Final" ~ 5
+    i == "Initial" ~0,
+    i == "Final" ~ 100,
+    TRUE ~ as.numeric(i)
   )
 }
 
+
 load_Dune <- function(comp) {
-  df <- read.table(here("data", "Replicability", "Dune_Smart", comp,
+  df <- read.table(here("Data", "Replicability", "Dune", comp,
                         "consensus_cluster_replicability.txt"))
   df <- df %>% filter(!str_detect(clustering_method, "Consensus")) %>%
     mutate(nb_clusters = replicable_clusters + non_replicable_clusters)
@@ -48,9 +47,8 @@ load_Dune <- function(comp) {
 }
 
 load_DE_tree <- function(comp) {
-  df <- read.table(here("data", "Replicability", "SingleTree",
-                        paste0(comp, "_DE"),
-                        "consensus_cluster_replicability.txt"))
+  df <- read.table(here("Data", "Replicability", "DE",
+                        comp, "consensus_cluster_replicability.txt"))
   df <- df %>% filter(!str_detect(clustering_method, "Consensus")) %>%
     mutate(nb_clusters = replicable_clusters + non_replicable_clusters,
            level = str_remove(clustering_method, "^.*\\."),
@@ -60,9 +58,8 @@ load_DE_tree <- function(comp) {
 }
 
 load_Dist_tree <- function(comp) {
-  df <- read.table(here("data", "Replicability", "SingleTree",
-                        paste0(comp, "_Dist"),
-                        "consensus_cluster_replicability.txt"))
+  df <- read.table(here("Data", "Replicability", "Dist",
+                        comp, "consensus_cluster_replicability.txt"))
   df <- df %>% filter(!str_detect(clustering_method, "Consensus")) %>%
     mutate(nb_clusters = replicable_clusters + non_replicable_clusters,
            level = str_remove(clustering_method, "^.*_"),
@@ -73,8 +70,8 @@ load_Dist_tree <- function(comp) {
 
 load_single_method <- function(comp) {
   df <- bind_rows("Dune" = load_Dune(comp = comp),
-                  "Hierarchical_DE" = load_DE_tree(comp = comp),
-                  "Hierarchical_Dist" = load_Dist_tree(comp = comp),
+                  "DE" = load_DE_tree(comp = comp),
+                  "Dist" = load_Dist_tree(comp = comp),
                   .id = "Method") %>%
     arrange(level) %>%
     mutate(clustering_method = str_remove_all(clustering_method, "\\..*$"))
@@ -83,10 +80,10 @@ load_single_method <- function(comp) {
 
 plotComp <- function(comp) {
   df <- load_single_method(comp = comp)
-  df1 <- df %>% filter(Method != "Hierarchical_Dist") %>%
-    mutate(comp = "Dune versus Hierarchical DE")
-  df2 <- df %>% filter(Method != "Hierarchical_DE") %>%
-    mutate(comp = "Dune versus Hierarchical Dist")
+  df1 <- df %>% filter(Method != "Dist") %>%
+    mutate(comp = "Dune versus DE")
+  df2 <- df %>% filter(Method != "Dist") %>%
+    mutate(comp = "Dune versus Dist")
   df <- bind_rows(df1, df2)
 
   p <- ggplot(df,
@@ -118,27 +115,30 @@ plotComp <- function(comp) {
 ## Scenario A
 
 ```{r}
-plotComp(comp = "Normal")
+plotComp(comp = "comp1") +
+  scale_x_continuous(limits = c(10, 30))
 ```
 
 ## Scenario B
 
 ```{r}
-plotComp(comp = "large2")
+plotComp(comp = "comp2") +
+  scale_x_continuous(limits = c(15, 30))
 ```
 
 ## Scenario C
 
 ```{r}
-plotComp(comp = "large3")
+plotComp(comp = "comp3") +
+  scale_x_continuous(limits = c(15, 40))
 ```
 
 # All together
 
 ```{r}
-df <- bind_rows(A = load_single_method("Normal"),
-                B = load_single_method("large2"),
-                C = load_single_method("large3"),
+df <- bind_rows(A = load_single_method("comp1"),
+                B = load_single_method("comp2"),
+                C = load_single_method("comp3"),
                 .id = "Run")
 df <- df %>% 
   group_by(Run, Method, clustering_method) %>%

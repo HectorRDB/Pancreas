@@ -26,16 +26,14 @@ rm(libs)
 ```{r laod data}
 toRank <- function(i) {
   case_when(
-    i == "Initial" ~ 1,
-    i == 33 ~ 2,
-    i == 66 ~ 3,
-    i == 90 ~ 4,
-    i == "Final" ~ 5
+    i == "Initial" ~0,
+    i == "Final" ~ 100,
+    TRUE ~ as.numeric(i)
   )
 }
 
 load_Dune <- function(comparison) {
-  df <- read.table(here("data", "Replicability", "Dune_Smart", comparison,
+  df <- read.table(here("data", "Replicability", "Dune", comparison,
                         "consensus_cluster_replicability.txt"))
   df <- df %>% filter(!str_detect(clustering_method, "Consensus")) %>%
     mutate(clustering_name = as.character(clustering_name))
@@ -47,13 +45,14 @@ load_Dune <- function(comparison) {
 
 read_single_method <- function(Method,
                                result_dir = here("data", "Replicability",
-                                                 "SingleMethod", "smart")) {
-  df <- read.table(file.path(result_dir, "consensus_cluster_replicability.txt"))
+                                                 "SingleMethod")) {
+  df <- read.table(file.path(result_dir, Method, 
+                             "consensus_cluster_replicability.txt"))
   df <- df %>% filter(clustering_name == Method)
 }
 
 filter_sc3_param <- function(dune, SC3) {
-  sc3_init <- dune %>% filter(clustering_method == "sc3.Initial")
+  sc3_init <- dune %>% filter(clustering_method == "sc3.00")
   sc3_param <- SC3 %>% filter(
     fraction_replicable_clusters == sc3_init$fraction_replicable_clusters &
     fraction_replicable_cells == sc3_init$fraction_replicable_cells)
@@ -65,7 +64,7 @@ filter_sc3_param <- function(dune, SC3) {
 }
 
 filter_monocle_param <- function(dune, Monocle) {
-  monocle_init <- dune %>% filter(clustering_method == "Monocle.Initial")
+  monocle_init <- dune %>% filter(clustering_method == "Monocle.00")
   monocle_param <- Monocle %>% filter(
     fraction_replicable_clusters == monocle_init$fraction_replicable_clusters &
     fraction_replicable_cells == monocle_init$fraction_replicable_cells)
@@ -78,21 +77,24 @@ filter_monocle_param <- function(dune, Monocle) {
 
 filter_seurat_param <- function(dune, Seurat) {
   df <- Seurat %>%
-    mutate(res = str_remove(level, ",.*$") %>% str_replace("_", "\\.") %>%
+    mutate(res = str_remove(clustering_method, "^Seurat\\.") %>%
+             word(1, sep = ",") %>%
              as.numeric(),
-           k = str_remove(level, "^.*,") %>% as.numeric())
-  seurat_init <- dune %>% filter(clustering_method == "Seurat.Initial")
+           k = str_remove(clustering_method, "^Seurat\\.") %>%
+             word(2, sep = ",") %>%
+             as.numeric())
+  seurat_init <- dune %>% filter(clustering_method == "Seurat.00")
   seurat_param <- df %>% filter(
     fraction_replicable_clusters == seurat_init$fraction_replicable_clusters &
     fraction_replicable_cells == seurat_init$fraction_replicable_cells)
   df <- df %>% 
-    filter(res <= seurat_param$res & k == seurat_param$k)  %>%
+    filter(res <= max(seurat_param$res) & k == min(seurat_param$k))  %>%
     mutate(level = res) %>%
     select(-res, -k)
   return(df)
 }
 
-read_all <- function(comparison = "Normal") {
+read_all <- function(comparison = "comp1") {
   dune <- load_Dune(comparison = comparison)
   Seurat <- read_single_method(Method = "Seurat") %>%
     filter_seurat_param(dune = dune, Seurat = .)
@@ -164,7 +166,6 @@ p <- ggplot(Seurat, aes( y = (replicable_clusters + non_replicable_clusters) / 2
   geom_line() +
   my_theme() +
   labs(x = "Resolution", y = "Number of clusters", col = "K parameter")
-ggsave(filename = here("Figures", "Paper", "Supp-Seurat-param.pdf"), p)
 ```
 
 ### Varying the resolution
@@ -241,28 +242,27 @@ We have three scenarios
 
 ## Scenario A
 ```{r}
-p <- plot_comp(read_all()) +
+p <- plot_comp(read_all(comp = "comp1")) +
   scale_x_continuous(limits = c(10, 30))
-ggsave(filename = here("Figures", "Paper", "A-singleMethod.pdf"), p)
-plot_comp(read_all())
+p
 ```
 
 ## Scenario B
 ```{r}
-plot_comp(read_all(comparison = "large2"))
+plot_comp(read_all(comparison = "comp2"))
 ```
 
 ## Scenario C
 ```{r}
-plot_comp(read_all(comparison = "large3"))
+plot_comp(read_all(comparison = "comp3"))
 ```
 
 ## All together
 
 ```{r}
-df <- bind_rows(A = read_all("Normal"),
-                B = read_all("large2"),
-                C = read_all("large3"),
+df <- bind_rows(A = read_all("comp1"),
+                B = read_all("comp2"),
+                C = read_all("comp3"),
                 .id = "Run")
 df <- df %>% 
   group_by(Run, method, clustering_name) %>%
@@ -293,23 +293,4 @@ ggplot(df,
     #       legend.text = element_text(size = 15))  +
     NULL +
   geom_hline(yintercept = 0, col = "black")
-```
-
-# single Method on 10x and Smart-Seq together
-
-```{r}
-Monocle <- read_single_method(Method = "Monocle",
-      result_dir = here("data", "Replicability", "SingleMethod", "tenx"))
-Seurat <- read_single_method(Method = "Seurat",
-      result_dir = here("data", "Replicability", "SingleMethod", "tenx"))
-
-ggplot(bind_rows(Monocle, Seurat),
-       aes(
-         x = (replicable_clusters + non_replicable_clusters) / 2,
-         y = fraction_replicable_cells,
-         col = clustering_name)) +
-  geom_point() +
-  my_theme() +
-  scale_y_continuous(limits = c(0, 1)) +
-  labs(x = "Resolution", y = "Replicability", col = "Clustering Method")
 ```
