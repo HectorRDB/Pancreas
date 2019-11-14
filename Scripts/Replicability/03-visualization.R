@@ -339,7 +339,6 @@ main_single_merge <- function(
   ## Comp1
   label_matrix <- load_single_merge_labels(colnames(dataset), data_path,
                                            size = "comp1")
-  print(colnames(label_matrix))
   create_summary_figures(label_matrix,
                          file.path(result_path, "comp1_DE"),
                          file.path(output_dir, "DE", "comp1"), 2
