@@ -100,7 +100,7 @@ saveRDS(merger,  paste0(output, "_1-bad_merger.rds"))
 
 # Save the matrix with all the consensus steps ----
 print("...Initial")
-chars <- c("sc3", "Monocle", "Seurat")
+chars <- c("sc3", "Monocle", "Seurat", "Garbage1")
 
 levels <- seq(from = 0, to = 1, by = .05)
 stopMatrix <- lapply(levels, function(p){
@@ -141,7 +141,7 @@ saveRDS(merger,  paste0(output, "_2-bad_merger.rds"))
 
 # Save the matrix with all the consensus steps ----
 print("...Initial")
-chars <- c("sc3", "Monocle", "Seurat")
+chars <- c("sc3", "Monocle", "Seurat", "Garbage1", "Garbage2")
 
 levels <- seq(from = 0, to = 1, by = .05)
 stopMatrix <- lapply(levels, function(p){
@@ -183,7 +183,7 @@ saveRDS(merger,  paste0(output, "_3-bad_merger.rds"))
 
 # Save the matrix with all the consensus steps ----
 print("...Initial")
-chars <- c("sc3", "Monocle", "Seurat")
+chars <- c("sc3", "Monocle", "Seurat", "Garbage1", "Garbage2", "Garbage3")
 
 levels <- seq(from = 0, to = 1, by = .05)
 stopMatrix <- lapply(levels, function(p){
