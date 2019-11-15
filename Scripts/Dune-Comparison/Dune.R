@@ -120,12 +120,10 @@ cat("Finished Consensus Merge\n")
 saveRDS(merger,  paste0(output, "_merger.rds"))
 
 # Save the matrix with all the consensus steps ----
-print("...Initial")
+Names <- as.character(Names)
 chars <- c("sc3", "Monocle", "Seurat")
-initialMat <- merger$initialMat
-colnames(initialMat) <- paste0(chars, "-00")
 
-levels <- seq(from = 0.05, to = 1, by = .05)
+levels <- seq(from = 0, to = 1, by = .05)
 stopMatrix <- lapply(levels, function(p){
   print(paste0("...Intermediary consensus at ", round(100 * p), "%"))
   mat <- intermediateMat(merger = merger, p = p) %>%
@@ -143,8 +141,7 @@ colnames(stopMatrix) <- lapply(levels, function(p){
   return(paste(chars, i, sep = "-"))
 }) %>% unlist()
 print("...Full matrix")
-mat <- cbind(as.character(Names), initialMat, stopMatrix)
-
+mat <- cbind(as.character(Names), stopMatrix)
 colnames(mat)[1] <- "cells"
 
 write_csv(x = as.data.frame(mat), path = paste0(output, "_Dune.csv"))
