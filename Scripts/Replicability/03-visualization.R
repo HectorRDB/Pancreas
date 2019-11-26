@@ -434,13 +434,13 @@ main_all_Garbage <- function(
 
 main <- function() {
   print("all Dunes")
-  main_all_Dunes()
+  # main_all_Dunes()
   print("single method")
   # main_single_method_all()
   print("single merges")
   # main_single_merge()
   print("Garbage in")
-  # main_all_Garbage()
+  main_all_Garbage()
 }
 
 if (!interactive()) {

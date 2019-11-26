@@ -153,9 +153,9 @@ main <- function() {
   print("single merge")
   # analyze_single_merge()
   print("single All Dunes")
-  analyze_Dunes()
+  # analyze_Dunes()
   print("Main Garbage")
-  # analyze_Garbage()
+  analyze_Garbage()
 }
 
 if (!interactive()) {
