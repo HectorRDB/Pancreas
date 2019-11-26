@@ -8,9 +8,9 @@
 echo "baron"
 loc="/accounts/projects/epurdom/singlecell/Pancreas/Data/singleMethod/baron"
 out="/accounts/projects/epurdom/singlecell/Pancreas/Data/Garbage/baron"
-Rscript --verbose  garbage.R -n 20 -l $loc -o $out -S "1.2.50" -C "0" -m "k_45" > baron.out 2>&1
+Rscript --verbose  garbage.R -n 20 -l $loc -o $out -S "1.2.50" -C "0" -m "k_50" > baron.out 2>&1
 
 echo "segerstolpe"
 loc="/accounts/projects/epurdom/singlecell/Pancreas/Data/singleMethod/segerstolpe"
 out="/accounts/projects/epurdom/singlecell/Pancreas/Data/Garbage/segerstolpe"
-Rscript --verbose  garbage.R -n 20 -l $loc -o $out -S "1.2.50" -C "0" -m "k_45" > segerstolpe.out 2>&1
+Rscript --verbose  garbage.R -n 20 -l $loc -o $out -S "1.2.50" -C "0" -m "k_50" > segerstolpe.out 2>&1
