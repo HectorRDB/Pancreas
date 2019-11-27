@@ -1,0 +1,129 @@
+suppressWarnings(library(optparse))
+
+# Arguments for R Script ----
+option_list <- list(
+  make_option(c("-o", "--output"),
+              action = "store", default = NA, type = "character",
+              help = "Where to store the output"
+  ),
+  make_option(c("-l", "--location"),
+              action = "store", default = NA, type = "character",
+              help = "The location of the data"
+  ),
+  make_option(c("-n", "--nCores"),
+              action = "store", default = 1, type = "integer",
+              help = "Number of cores to use"
+  ),
+  make_option(c("-S", "--SeuratParam"),
+              action = "store", default = NA, type = "character",
+              help = "Parameter to use for Seurat"
+  ),
+  make_option(c("-C", "--C3"),
+              action = "store", default = NA, type = "character",
+              help = "SC3 parameter"
+  ),
+  make_option(c("-m", "--monocle"),
+              action = "store", default = NA, type = "character",
+              help = "Monocle parameter"
+  )
+)
+
+opt <- parse_args(OptionParser(option_list = option_list))
+
+if (!is.na(opt$l)) {
+  loc <- opt$l
+  cat("The selected dataset is located at ", loc, "\n")
+} else {
+  stop("Missing l argument")
+}
+
+if (!is.na(opt$o)) {
+  output <- opt$o
+} else {
+  stop("Missing o argument")
+  cat("The output will be stored at ", output, "\n")
+}
+
+if (!is.na(opt$C)) {
+  sc3_p <- opt$C
+} else {
+  stop("Missing C argument")
+}
+
+if (!is.na(opt$C)) {
+  seurat_p <- opt$S
+} else {
+  stop("Missing S argument")
+}
+
+if (!is.na(opt$m)) {
+  monocle_p <- opt$m
+} else {
+  stop("Missing m argument")
+}
+
+library(SummarizedExperiment)
+library(parallel)
+library(matrixStats)
+library(clusterExperiment)
+library(tidyverse)
+library(Dune)
+library(mclust)
+
+# Load Data ----
+# Load sc3 clustering results
+sc3 <- read.csv(paste0(loc, "_SC3.csv"))[, -1]
+colnames(sc3) <- str_remove(colnames(sc3), "^X") %>% str_replace("\\.", "-")
+Names <- as.character(sc3$cells)
+sc3 <- sc3[, sc3_p] %>% as.numeric()
+
+# Load Seurat clustering results
+Seurat <- read.csv(paste0(loc, "_Seurat.csv"))[, -1]
+colnames(Seurat) <- str_remove(colnames(Seurat), "^X")
+Seurat <- Seurat[, seurat_p] %>% as.numeric()
+
+# Load Monocle clustering results
+Monocle <- read.csv(paste0(loc, "_Monocle.csv"))[, -1]
+Monocle <- as.data.frame(Monocle)[, monocle_p] %>% as.numeric()
+
+# We do 10 iterations of garbage clustering
+set.seed(80)
+for (fraction in c(.01, .05, .1, .2, .3, .4, .5)) {
+  # downsample more and more ----
+  clusMat <- data.frame("sc3" = sc3, "Monocle" = Monocle, "Seurat" = Seurat)
+  rownames(clusMat) <- Names  
+  n <- round(nrow(clusMat) * fraction)
+  keep <- sample(Names, size = n)
+  clusMat <- clusMat[keep, ]
+  print(system.time(
+    merger <- Dune(clusMat = clusMat, nCores = opt$n)
+  ))
+  cat("Finished Consensus Merge\n")
+  
+  # Save the matrix with all the consensus steps ----
+  chars <- c("sc3", "Monocle", "Seurat", "Garbage1")
+  
+  levels <- seq(from = 0, to = 1, by = .05)
+  stopMatrix <- lapply(levels, function(p){
+    print(paste0("...Intermediary consensus at ", round(100 * p), "%"))
+    mat <- intermediateMat(merger = merger, p = p) %>%
+      as.matrix()
+    mat <- mat[Names[keep], ]
+    return(mat)
+  }) %>%
+    do.call('cbind', args = .)
+  
+  colnames(stopMatrix) <- lapply(levels, function(p){
+    i <- as.character(round(100 * p))
+    if (nchar(i) == 1) {
+      i <- paste0("0", i)
+    }
+    return(paste(chars, i, sep = "-"))
+  }) %>% unlist()
+  print("...Full matrix")
+  mat <- cbind(as.character(Names[keep]), stopMatrix)
+  
+  colnames(mat)[1] <- "cells"
+  
+  write_csv(x = as.data.frame(mat), path = paste0(output, "_", fraction * 100, ".csv"))
+}
