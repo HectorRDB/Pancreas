@@ -135,15 +135,17 @@ analyze_Garbage <- function(data_path = here("Data"),
                             output_dir = here("Data", "Replicability",
                                               "mn_results", "Garbage")) {
   dataset <- load_data()
-  # Dune comp1
-  labels <- load_garbage_labels(colnames(dataset), data_path, size = "1-bad")
-  analyze_data(dataset, labels, paste0(output_dir, "/bad_1"))
-  # Dune comp2
-  labels <- load_garbage_labels(colnames(dataset), data_path, size = "2-bad")
-  analyze_data(dataset, labels, paste0(output_dir, "/bad_2"))
-  # Dune comp3
-  labels <- load_garbage_labels(colnames(dataset), data_path, size = "3-bad")
-  analyze_data(dataset, labels, paste0(output_dir, "/bad_3"))
+  for (comp in 1:3) {
+    print(paste0("Comp ", comp))
+    for (rep in 1:10) {
+      for (size in 1:3)
+      print(paste0("...rep ", rep))
+      labels <- load_garbage_labels(colnames(dataset), data_path,
+                                    comp = comp, rep = rep, size = size)
+      analyze_data(dataset, labels,
+                   paste0(output_dir, paste("Bad", comp, size, rep, sep = "-")))
+    }
+  }
 }
 
 ## To run ----

@@ -133,14 +133,14 @@ load_single_monocle_labels <- function(cell_names, data_path = here("Data")) {
 
 # Load garbage ----
 load_garbage_labels <- function(cell_names, data_path = here("Data"),
-                             size = "") {
+                                comp = 1, rep = 1, size = 1) {
   
   input_dir <- file.path(data_path, "Garbage")
   label_matrix <- bind_rows(
     baron = read.csv(
-      file.path(input_dir, paste0("baron_", size, ".csv"))),
+      file.path(input_dir, paste0("Garb", comp, "_baron_", rep, "_bad", size, ".csv"))),
     segerstolpe = read.csv(
-      file.path(input_dir, paste0("segerstolpe_", size, ".csv"))),
+      file.path(input_dir, paste0("Garb", comp, "_segerstolpe_", rep, "_bad", size, ".csv"))),
     .id = "dataset"
   )
   

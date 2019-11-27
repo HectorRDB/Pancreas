@@ -412,24 +412,21 @@ main_all_Garbage <- function(
   data_path <- here("Data")
   dataset <- load_data()
   
-  # Comp1
-  label_matrix <- load_garbage_labels(colnames(dataset), data_path, size = "1-bad")
-  create_summary_figures(label_matrix,
-                         file.path(result_path, "bad_1"),
-                         file.path(output_dir, "bad_1"), 2
-  )
-  # Comp2
-  label_matrix <- load_garbage_labels(colnames(dataset), data_path, size = "2-bad")
-  create_summary_figures(label_matrix,
-                         file.path(result_path, "bad_2"),
-                         file.path(output_dir, "bad_2"), 2
-  )
-  # Comp3
-  label_matrix <- load_garbage_labels(colnames(dataset), data_path, size = "3-bad")
-  create_summary_figures(label_matrix,
-                         file.path(result_path, "bad_3"),
-                         file.path(output_dir, "bad_3"), 2
-  )
+  for (comp in 1:3) {
+    print(paste0("Comp ", comp))
+    for (rep in 1:10) {
+      for (size in 1:3)
+        print(paste0("...rep ", rep))
+      labels <- load_garbage_labels(colnames(dataset), data_path,
+                                    comp = comp, rep = rep, size = size)
+      create_summary_figures(
+        label_matrix,
+        paste0(result_path, paste("Bad", comp, size, rep, sep = "-")),
+        file.path(output_dir, paste("Bad", comp, size, rep, sep = "-")),
+        2
+      )
+    }
+  }
 }
 
 main <- function() {
