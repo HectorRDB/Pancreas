@@ -86,125 +86,125 @@ Seurat <- Seurat[, seurat_p] %>% as.numeric()
 Monocle <- read.csv(paste0(loc, "_Monocle.csv"))[, -1]
 Monocle <- as.data.frame(Monocle)[, monocle_p] %>% as.numeric()
 
-# Do the consensus clustering with one additional garbage clustering ----
-clusMat <- data.frame("sc3" = sc3, "Monocle" = Monocle, "Seurat" = Seurat)
-rownames(clusMat) <- Names  
-n_clus <- mean(n_distinct(sc3), n_distinct(Seurat), n_distinct(Monocle))
-clusMat$garbage <- sample(n_clus, size = nrow(clusMat), replace = TRUE)
-print(paste0("Number of cores: ", opt$n))
-print(system.time(
-  merger <- Dune(clusMat = clusMat, nCores = opt$n)
-))
-cat("Finished Consensus Merge\n")
-saveRDS(merger,  paste0(output, "_1-bad_merger.rds"))
-
-# Save the matrix with all the consensus steps ----
-print("...Initial")
-chars <- c("sc3", "Monocle", "Seurat", "Garbage1")
-
-levels <- seq(from = 0, to = 1, by = .05)
-stopMatrix <- lapply(levels, function(p){
-  print(paste0("...Intermediary consensus at ", round(100 * p), "%"))
-  mat <- intermediateMat(merger = merger, p = p) %>%
-    as.matrix()
-  mat <- mat[Names, ]
-  return(mat)
-}) %>%
-  do.call('cbind', args = .)
-
-colnames(stopMatrix) <- lapply(levels, function(p){
-  i <- as.character(round(100 * p))
-  if (nchar(i) == 1) {
-    i <- paste0("0", i)
-  }
-  return(paste(chars, i, sep = "-"))
-}) %>% unlist()
-print("...Full matrix")
-mat <- cbind(as.character(Names), stopMatrix)
-
-colnames(mat)[1] <- "cells"
-
-write_csv(x = as.data.frame(mat), path = paste0(output, "_1-bad.csv"))
-
-# Do the consensus clustering with two additional garbage clustering ----
-clusMat <- data.frame("sc3" = sc3, "Monocle" = Monocle, "Seurat" = Seurat)
-rownames(clusMat) <- Names  
-n_clus <- mean(n_distinct(sc3), n_distinct(Seurat), n_distinct(Monocle))
-clusMat$garbage1 <- sample(n_clus, size = nrow(clusMat), replace = TRUE)
-clusMat$garbage2 <- sample(n_clus, size = nrow(clusMat), replace = TRUE)
-print(paste0("Number of cores: ", opt$n))
-print(system.time(
-  merger <- Dune(clusMat = clusMat, nCores = opt$n)
-))
-cat("Finished Consensus Merge\n")
-saveRDS(merger,  paste0(output, "_2-bad_merger.rds"))
-
-# Save the matrix with all the consensus steps ----
-print("...Initial")
-chars <- c("sc3", "Monocle", "Seurat", "Garbage1", "Garbage2")
-
-levels <- seq(from = 0, to = 1, by = .05)
-stopMatrix <- lapply(levels, function(p){
-  print(paste0("...Intermediary consensus at ", round(100 * p), "%"))
-  mat <- intermediateMat(merger = merger, p = p) %>%
-    as.matrix()
-  mat <- mat[Names, ]
-  return(mat)
-}) %>%
-  do.call('cbind', args = .)
-
-colnames(stopMatrix) <- lapply(levels, function(p){
-  i <- as.character(round(100 * p))
-  if (nchar(i) == 1) {
-    i <- paste0("0", i)
-  }
-  return(paste(chars, i, sep = "-"))
-}) %>% unlist()
-print("...Full matrix")
-mat <- cbind(as.character(Names), stopMatrix)
-
-colnames(mat)[1] <- "cells"
-
-write_csv(x = as.data.frame(mat), path = paste0(output, "_2-bad.csv"))
-
-# Do the consensus clustering with three additional garbage clustering ----
-clusMat <- data.frame("sc3" = sc3, "Monocle" = Monocle, "Seurat" = Seurat)
-rownames(clusMat) <- Names  
-n_clus <- mean(n_distinct(sc3), n_distinct(Seurat), n_distinct(Monocle))
-clusMat$garbage1 <- sample(n_clus, size = nrow(clusMat), replace = TRUE)
-clusMat$garbage2 <- sample(n_clus, size = nrow(clusMat), replace = TRUE)
-clusMat$garbage3 <- sample(n_clus, size = nrow(clusMat), replace = TRUE)
-print(paste0("Number of cores: ", opt$n))
-print(system.time(
-  merger <- Dune(clusMat = clusMat, nCores = opt$n)
-))
-cat("Finished Consensus Merge\n")
-saveRDS(merger,  paste0(output, "_3-bad_merger.rds"))
-
-# Save the matrix with all the consensus steps ----
-print("...Initial")
-chars <- c("sc3", "Monocle", "Seurat", "Garbage1", "Garbage2", "Garbage3")
-
-levels <- seq(from = 0, to = 1, by = .05)
-stopMatrix <- lapply(levels, function(p){
-  print(paste0("...Intermediary consensus at ", round(100 * p), "%"))
-  mat <- intermediateMat(merger = merger, p = p) %>%
-    as.matrix()
-  mat <- mat[Names, ]
-  return(mat)
-}) %>%
-  do.call('cbind', args = .)
-
-colnames(stopMatrix) <- lapply(levels, function(p){
-  i <- as.character(round(100 * p))
-  if (nchar(i) == 1) {
-    i <- paste0("0", i)
-  }
-  return(paste(chars, i, sep = "-"))
-}) %>% unlist()
-print("...Full matrix")
-mat <- cbind(as.character(Names), stopMatrix)
-colnames(mat)[1] <- "cells"
-
-write_csv(x = as.data.frame(mat), path = paste0(output, "_3-bad.csv"))
-
+# We do 10 iterations of garbage clustering
+set.seed(209)
+for (i in 1:10) {
+  # Do the consensus clustering with one additional garbage clustering ----
+  clusMat <- data.frame("sc3" = sc3, "Monocle" = Monocle, "Seurat" = Seurat)
+  rownames(clusMat) <- Names  
+  n_clus <- mean(n_distinct(sc3), n_distinct(Seurat), n_distinct(Monocle))
+  clusMat$garbage <- sample(n_clus, size = nrow(clusMat), replace = TRUE)
+  print(paste0("Number of cores: ", opt$n))
+  print(system.time(
+    merger <- Dune(clusMat = clusMat, nCores = opt$n)
+  ))
+  cat("Finished Consensus Merge\n")
+  
+  # Save the matrix with all the consensus steps ----
+  print("...Initial")
+  chars <- c("sc3", "Monocle", "Seurat", "Garbage1")
+  
+  levels <- seq(from = 0, to = 1, by = .05)
+  stopMatrix <- lapply(levels, function(p){
+    print(paste0("...Intermediary consensus at ", round(100 * p), "%"))
+    mat <- intermediateMat(merger = merger, p = p) %>%
+      as.matrix()
+    mat <- mat[Names, ]
+    return(mat)
+  }) %>%
+    do.call('cbind', args = .)
+  
+  colnames(stopMatrix) <- lapply(levels, function(p){
+    i <- as.character(round(100 * p))
+    if (nchar(i) == 1) {
+      i <- paste0("0", i)
+    }
+    return(paste(chars, i, sep = "-"))
+  }) %>% unlist()
+  print("...Full matrix")
+  mat <- cbind(as.character(Names), stopMatrix)
+  
+  colnames(mat)[1] <- "cells"
+  
+  write_csv(x = as.data.frame(mat), path = paste0(output, "_", i, "_bad1.csv"))
+  
+  # Do the consensus clustering with two additional garbage clustering ----
+  clusMat <- data.frame("sc3" = sc3, "Monocle" = Monocle, "Seurat" = Seurat)
+  rownames(clusMat) <- Names  
+  n_clus <- mean(n_distinct(sc3), n_distinct(Seurat), n_distinct(Monocle))
+  clusMat$garbage1 <- sample(n_clus, size = nrow(clusMat), replace = TRUE)
+  clusMat$garbage2 <- sample(n_clus, size = nrow(clusMat), replace = TRUE)
+  print(paste0("Number of cores: ", opt$n))
+  print(system.time(
+    merger <- Dune(clusMat = clusMat, nCores = opt$n)
+  ))
+  cat("Finished Consensus Merge\n")
+  
+  # Save the matrix with all the consensus steps ----
+  print("...Initial")
+  chars <- c("sc3", "Monocle", "Seurat", "Garbage1", "Garbage2")
+  
+  levels <- seq(from = 0, to = 1, by = .05)
+  stopMatrix <- lapply(levels, function(p){
+    print(paste0("...Intermediary consensus at ", round(100 * p), "%"))
+    mat <- intermediateMat(merger = merger, p = p) %>%
+      as.matrix()
+    mat <- mat[Names, ]
+    return(mat)
+  }) %>%
+    do.call('cbind', args = .)
+  
+  colnames(stopMatrix) <- lapply(levels, function(p){
+    i <- as.character(round(100 * p))
+    if (nchar(i) == 1) {
+      i <- paste0("0", i)
+    }
+    return(paste(chars, i, sep = "-"))
+  }) %>% unlist()
+  print("...Full matrix")
+  mat <- cbind(as.character(Names), stopMatrix)
+  
+  colnames(mat)[1] <- "cells"
+  
+  write_csv(x = as.data.frame(mat), path = paste0(output, "_", i, "_bad2.csv"))
+  
+  # Do the consensus clustering with three additional garbage clustering ----
+  clusMat <- data.frame("sc3" = sc3, "Monocle" = Monocle, "Seurat" = Seurat)
+  rownames(clusMat) <- Names  
+  n_clus <- mean(n_distinct(sc3), n_distinct(Seurat), n_distinct(Monocle))
+  clusMat$garbage1 <- sample(n_clus, size = nrow(clusMat), replace = TRUE)
+  clusMat$garbage2 <- sample(n_clus, size = nrow(clusMat), replace = TRUE)
+  clusMat$garbage3 <- sample(n_clus, size = nrow(clusMat), replace = TRUE)
+  print(paste0("Number of cores: ", opt$n))
+  print(system.time(
+    merger <- Dune(clusMat = clusMat, nCores = opt$n)
+  ))
+  cat("Finished Consensus Merge\n")
+  
+  # Save the matrix with all the consensus steps ----
+  print("...Initial")
+  chars <- c("sc3", "Monocle", "Seurat", "Garbage1", "Garbage2", "Garbage3")
+  
+  levels <- seq(from = 0, to = 1, by = .05)
+  stopMatrix <- lapply(levels, function(p){
+    print(paste0("...Intermediary consensus at ", round(100 * p), "%"))
+    mat <- intermediateMat(merger = merger, p = p) %>%
+      as.matrix()
+    mat <- mat[Names, ]
+    return(mat)
+  }) %>%
+    do.call('cbind', args = .)
+  
+  colnames(stopMatrix) <- lapply(levels, function(p){
+    i <- as.character(round(100 * p))
+    if (nchar(i) == 1) {
+      i <- paste0("0", i)
+    }
+    return(paste(chars, i, sep = "-"))
+  }) %>% unlist()
+  print("...Full matrix")
+  mat <- cbind(as.character(Names), stopMatrix)
+  colnames(mat)[1] <- "cells"
+  
+  write_csv(x = as.data.frame(mat), path = paste0(output, "_", i, "_bad3.csv"))
+}
