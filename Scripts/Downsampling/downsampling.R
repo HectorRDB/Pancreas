@@ -94,12 +94,11 @@ for (fraction in c(.01, .05, 1:10 / 10)) {
   rownames(clusMat) <- Names  
   n <- round(nrow(clusMat) * fraction)
   keep <- sample(Names, size = n)
-  clusMat <- clusMat[keep, ]
   print(system.time(
-    merger <- Dune(clusMat = clusMat, nCores = opt$n)
+    merger <- Dune(clusMat = clusMat[keep, ], nCores = opt$n)
   ))
   cat("Finished Consensus Merge\n")
-  
+  merger$initialMat <- clusMat
   # Save the matrix with all the consensus steps ----
   chars <- c("sc3", "Monocle", "Seurat", "Garbage1")
   
@@ -108,7 +107,7 @@ for (fraction in c(.01, .05, 1:10 / 10)) {
     print(paste0("...Intermediary consensus at ", round(100 * p), "%"))
     mat <- intermediateMat(merger = merger, p = p) %>%
       as.matrix()
-    mat <- mat[Names[keep], ]
+    mat <- mat[Names, ]
     return(mat)
   }) %>%
     do.call('cbind', args = .)
@@ -121,7 +120,7 @@ for (fraction in c(.01, .05, 1:10 / 10)) {
     return(paste(chars, i, sep = "-"))
   }) %>% unlist()
   print("...Full matrix")
-  mat <- cbind(as.character(Names[keep]), stopMatrix)
+  mat <- cbind(as.character(Names), stopMatrix)
   
   colnames(mat)[1] <- "cells"
   
