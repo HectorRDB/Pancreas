@@ -88,7 +88,7 @@ Monocle <- as.data.frame(Monocle)[, monocle_p] %>% as.numeric()
 
 # We do 10 iterations of garbage clustering
 set.seed(80)
-for (fraction in c(.01, .05, .1, .2, .3, .4, .5)) {
+for (fraction in c(.01, .05, 1:10 / 10)) {
   # downsample more and more ----
   clusMat <- data.frame("sc3" = sc3, "Monocle" = Monocle, "Seurat" = Seurat)
   rownames(clusMat) <- Names  
