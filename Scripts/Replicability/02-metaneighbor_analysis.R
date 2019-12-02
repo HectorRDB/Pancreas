@@ -142,8 +142,9 @@ analyze_Garbage <- function(data_path = here("Data"),
       print(paste0("...rep ", rep))
       labels <- load_garbage_labels(colnames(dataset), data_path,
                                     comp = comp, rep = rep, size = size)
+      labels <- labels[, !str_detect(colnames(labels), "Garbage")]
       analyze_data(dataset, labels,
-                   paste0(output_dir, paste("Bad", comp, size, rep, sep = "-")))
+                   paste0(output_dir, paste("/Bad", comp, size, rep, sep = "-")))
     }
   }
 }
