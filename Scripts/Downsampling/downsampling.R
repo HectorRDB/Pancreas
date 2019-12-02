@@ -86,7 +86,7 @@ Seurat <- Seurat[, seurat_p] %>% as.numeric()
 Monocle <- read.csv(paste0(loc, "_Monocle.csv"))[, -1]
 Monocle <- as.data.frame(Monocle)[, monocle_p] %>% as.numeric()
 
-# We do 10 iterations of garbage clustering
+# We do fractions of downsampling
 set.seed(80)
 for (fraction in c(.01, .05, 1:10 / 10)) {
   # downsample more and more ----
@@ -100,7 +100,7 @@ for (fraction in c(.01, .05, 1:10 / 10)) {
   cat("Finished Consensus Merge\n")
   merger$initialMat <- clusMat
   # Save the matrix with all the consensus steps ----
-  chars <- c("sc3", "Monocle", "Seurat", "Garbage1")
+  chars <- c("sc3", "Monocle", "Seurat")
   
   levels <- seq(from = 0, to = 1, by = .05)
   stopMatrix <- lapply(levels, function(p){
