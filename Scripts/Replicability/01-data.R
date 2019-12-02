@@ -150,3 +150,23 @@ load_garbage_labels <- function(cell_names, data_path = here("Data"),
   
   return(label_matrix)
 }
+
+# Load downsampling ----
+load_down_labels <- function(cell_names, data_path = here("Data"),
+                             comp = 1, fraction = .05) {
+  
+  input_dir <- file.path(data_path, "Downsampling")
+  label_matrix <- bind_rows(
+    baron = read.csv(
+      file.path(input_dir, paste0("baron_comp", comp, "_", 100 * fraction, ".csv"))),
+    segerstolpe = read.csv(
+      file.path(input_dir, paste0("segerstolpe_comp", comp, "_", 100 * fraction, ".csv"))),
+    .id = "dataset"
+  )
+  
+  # reorder cells to match data
+  row_match <- match(cell_names, label_matrix$cells)
+  label_matrix <- label_matrix[row_match, ]
+  
+  return(label_matrix)
+}

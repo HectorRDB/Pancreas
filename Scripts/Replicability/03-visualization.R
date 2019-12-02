@@ -415,14 +415,40 @@ main_all_Garbage <- function(
   for (comp in 1:3) {
     print(paste0("Comp ", comp))
     for (rep in 1:10) {
-      for (size in 1:3)
-        print(paste0("...rep ", rep))
-      labels <- load_garbage_labels(colnames(dataset), data_path,
-                                    comp = comp, rep = rep, size = size)
+      print(paste0("...rep ", rep))
+      for (size in 1:3) {
+        print(paste0("......size ", size))
+        labels <- load_garbage_labels(colnames(dataset), data_path,
+                                      comp = comp, rep = rep, size = size)
+        labels <- labels[, !str_detect(colnames(labels), "Garbage")]
+        create_summary_figures(
+          label_matrix,
+          paste0(result_path, paste("/Bad", comp, size, rep, sep = "-")),
+          file.path(output_dir, paste("Bad", comp, size, rep, sep = "-")),
+          2
+        )
+      }
+    }
+  }
+}
+
+main_all_Downsampling <- function(
+  result_path = here("Data", "Replicability", "mn_results", "Downsampling"),
+  output_dir = here("Data", "Replicability", "Downsampling")) 
+{
+  data_path <- here("Data")
+  dataset <- load_data()
+  
+  for (comp in 1:3) {
+    print(paste0("Comp ", comp))
+    for (fraction in c(.01, .05, 1:10 / 10)) {
+      print(paste0("...fraction ", fraction))
+      labels <- load_down_labels(colnames(dataset), data_path,
+                                 comp = comp, fraction = fraction)
       create_summary_figures(
         label_matrix,
-        paste0(result_path, paste("Bad", comp, size, rep, sep = "-")),
-        file.path(output_dir, paste("Bad", comp, size, rep, sep = "-")),
+        paste0(result_path, paste("/Fraction", comp, 100 * fraction, sep = "-")),
+        file.path(output_dir, paste("Fraction", comp, 100 * fraction, sep = "-")),
         2
       )
     }
@@ -430,14 +456,16 @@ main_all_Garbage <- function(
 }
 
 main <- function() {
-  print("all Dunes")
+  # print("all Dunes")
   # main_all_Dunes()
-  print("single method")
+  # print("single method")
   # main_single_method_all()
-  print("single merges")
+  # print("single merges")
   # main_single_merge()
   print("Garbage in")
   main_all_Garbage()
+  print("Downsampling")
+  main_all_Downsampling
 }
 
 if (!interactive()) {

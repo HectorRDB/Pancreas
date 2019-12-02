@@ -138,27 +138,48 @@ analyze_Garbage <- function(data_path = here("Data"),
   for (comp in 1:3) {
     print(paste0("Comp ", comp))
     for (rep in 1:10) {
-      for (size in 1:3)
       print(paste0("...rep ", rep))
-      labels <- load_garbage_labels(colnames(dataset), data_path,
-                                    comp = comp, rep = rep, size = size)
-      labels <- labels[, !str_detect(colnames(labels), "Garbage")]
+      for (size in 1:3) {
+        print(paste0("......size ", size))
+        labels <- load_garbage_labels(colnames(dataset), data_path,
+                                      comp = comp, rep = rep, size = size)
+        labels <- labels[, !str_detect(colnames(labels), "Garbage")]
+        analyze_data(dataset, labels,
+                  paste0(output_dir, paste("/Bad", comp, size, rep, sep = "-")))
+      }
+    }
+  }
+}
+
+# Analyze downsampling ----
+analyze_downsampling <- function(data_path = here("Data"),
+                                 output_dir = here("Data", "Replicability",
+                                              "mn_results", "Downsampling")) {
+  dataset <- load_data()
+  for (comp in 1:3) {
+    print(paste0("Comp ", comp))
+    for (fraction in c(.01, .05, 1:10 / 10)) {
+        print(paste0("...fraction ", fraction))
+      labels <- load_down_labels(colnames(dataset), data_path,
+                                 comp = comp, fraction = fraction)
       analyze_data(dataset, labels,
-                   paste0(output_dir, paste("/Bad", comp, size, rep, sep = "-")))
+        paste0(output_dir, paste("/Fraction", comp, 100 * fraction, sep = "-")))
     }
   }
 }
 
 ## To run ----
 main <- function() {
-  print("single Method smart")
+  # print("single Method smart")
   # analyze_single_methods()
-  print("single merge")
+  # print("single merge")
   # analyze_single_merge()
-  print("single All Dunes")
+  # print("single All Dunes")
   # analyze_Dunes()
   print("Main Garbage")
   analyze_Garbage()
+  print("Main Downsampling")
+  analyze_downsampling()
 }
 
 if (!interactive()) {
