@@ -463,10 +463,10 @@ main <- function() {
   # main_single_method_all()
   # print("single merges")
   # main_single_merge()
-  print("Garbage in")
-  main_all_Garbage()
+  # print("Garbage in")
+  # main_all_Garbage()
   print("Downsampling")
-  main_all_Downsampling
+  main_all_Downsampling()
 }
 
 if (!interactive()) {
