@@ -457,14 +457,14 @@ main_all_Downsampling <- function(
 }
 
 main <- function() {
-  # print("all Dunes")
-  # main_all_Dunes()
-  # print("single method")
-  # main_single_method_all()
-  # print("single merges")
-  # main_single_merge()
-  # print("Garbage in")
-  # main_all_Garbage()
+  print("all Dunes")
+  main_all_Dunes()
+  print("single method")
+  main_single_method_all()
+  print("single merges")
+  main_single_merge()
+  print("Garbage in")
+  main_all_Garbage()
   print("Downsampling")
   main_all_Downsampling()
 }
