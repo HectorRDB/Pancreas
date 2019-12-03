@@ -418,9 +418,10 @@ main_all_Garbage <- function(
       print(paste0("...rep ", rep))
       for (size in 1:3) {
         print(paste0("......size ", size))
-        labels <- load_garbage_labels(colnames(dataset), data_path,
+        label_matrix <- load_garbage_labels(colnames(dataset), data_path,
                                       comp = comp, rep = rep, size = size)
-        labels <- labels[, !str_detect(colnames(labels), "Garbage")]
+        label_matrix <- label_matrix[,
+                              !str_detect(colnames(label_matrix), "Garbage")]
         create_summary_figures(
           label_matrix,
           paste0(result_path, paste("/Bad", comp, size, rep, sep = "-")),
@@ -443,7 +444,7 @@ main_all_Downsampling <- function(
     print(paste0("Comp ", comp))
     for (fraction in c(.01, .05, 1:10 / 10)) {
       print(paste0("...fraction ", fraction))
-      labels <- load_down_labels(colnames(dataset), data_path,
+      label_matrix <- load_down_labels(colnames(dataset), data_path,
                                  comp = comp, fraction = fraction)
       create_summary_figures(
         label_matrix,
