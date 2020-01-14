@@ -67,7 +67,6 @@ mn_variable_genes_one_dataset <- function(data_subset) {
   return(unlist(genes_list[1:temp - 1]))
 }
 
-
 scran_variable_genes <- function(dataset, n = 200) {
   if (length(unique(dataset$study_id)) > 1) {
     design <- model.matrix(~ as.character(dataset$study_id))
