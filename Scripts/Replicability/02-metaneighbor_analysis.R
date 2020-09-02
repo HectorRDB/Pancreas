@@ -81,6 +81,22 @@ analyze_Dunes <- function(data_path = here("Data"),
   analyze_data(dataset, labels, paste0(output_dir, "/comp3"))
 }
 
+## Dune NMI ----
+analyze_Dunes_NMI <- function(data_path = here("Data"),
+                              output_dir = here("Data", "Replicability",
+                                            "mn_results", "Dune_NMI")) {
+  dataset <- load_data()
+  # Dune comp1
+  labels <- load_Dune_NMI_labels(colnames(dataset), data_path, size = "comp1")
+  analyze_data(dataset, labels, paste0(output_dir, "/comp1"))
+  # Dune comp2
+  labels <- load_Dune_NMI_labels(colnames(dataset), data_path, size = "comp2")
+  analyze_data(dataset, labels, paste0(output_dir, "/comp2"))
+  # Dune comp3
+  labels <- load_Dune_NMI_labels(colnames(dataset), data_path, size = "comp3")
+  analyze_data(dataset, labels, paste0(output_dir, "/comp3"))
+}
+
 ## Hierarchical ----
 analyze_single_merge <- function(data_path = here("Data"),
                                  output_dir = here("Data", "Replicability",

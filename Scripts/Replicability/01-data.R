@@ -28,6 +28,25 @@ load_Dune_labels <- function(cell_names, data_path = here("Data"),
   return(label_matrix)
 }
 
+load_Dune_NMI_labels <- function(cell_names, data_path = here("Data"),
+                                 size = "") {
+  
+  input_dir <- file.path(data_path, "Dune")
+  label_matrix <- bind_rows(
+    baron = read.csv(
+      file.path(input_dir, paste0("baron_", size, "_Dune_NMI.csv"))),
+    segerstolpe = read.csv(
+      file.path(input_dir, paste0("segerstolpe_", size, "_Dune_NMI.csv"))),
+    .id = "dataset"
+  )
+  
+  # reorder cells to match data
+  row_match <- match(cell_names, label_matrix$cells)
+  label_matrix <- label_matrix[row_match, ]
+  
+  return(label_matrix)
+}
+
 # Load hierarchical ----
 
 load_single_merge_labels <- function(cell_names, data_path = here("Data"),

@@ -328,6 +328,33 @@ main_all_Dunes <- function(
   )
 }
 
+main_all_Dunes_NMI <- function(
+  result_path = here("Data", "Replicability", "mn_results", "Dune_NMI"),
+  output_dir = here("Data", "Replicability", "Dune_NMI")) 
+{
+  data_path <- here("Data")
+  dataset <- load_data()
+  
+  # Comp1
+  label_matrix <- load_Dune_NMI_labels(colnames(dataset), data_path, size = "comp1")
+  create_summary_figures(label_matrix,
+                         file.path(result_path, "comp1"),
+                         file.path(output_dir, "comp1"), 2
+  )
+  # Comp2
+  label_matrix <- load_Dune_NMI_labels(colnames(dataset), data_path, size = "comp2")
+  create_summary_figures(label_matrix,
+                         file.path(result_path, "comp2"),
+                         file.path(output_dir, "comp2"), 2
+  )
+  # Comp3
+  label_matrix <- load_Dune_NMI_labels(colnames(dataset), data_path, size = "comp3")
+  create_summary_figures(label_matrix,
+                         file.path(result_path, "comp3"),
+                         file.path(output_dir, "comp3"), 2
+  )
+}
+
 main_single_merge <- function(
   result_path = here("Data", "Replicability", "mn_results", "singleTree"),
   output_dir = here("Data", "Replicability")) 
@@ -459,6 +486,7 @@ main_all_Downsampling <- function(
 main <- function() {
   print("all Dunes")
   main_all_Dunes()
+  main_all_Dunes_NMI()
   print("single method")
   main_single_method_all()
   print("single merges")
