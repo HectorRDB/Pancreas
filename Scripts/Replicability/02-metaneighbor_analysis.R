@@ -186,16 +186,17 @@ analyze_downsampling <- function(data_path = here("Data"),
 
 ## To run ----
 main <- function() {
-  print("single Method smart")
-  analyze_single_methods()
-  print("single merge")
-  analyze_single_merge()
+  # print("single Method smart")
+  # analyze_single_methods()
+  # print("single merge")
+  # analyze_single_merge()
   print("single All Dunes")
-  analyze_Dunes()
-  print("Main Garbage")
-  analyze_Garbage()
-  print("Main Downsampling")
-  analyze_downsampling()
+  # analyze_Dunes()
+  analyze_Dunes_NMI
+  # print("Main Garbage")
+  # analyze_Garbage()
+  # print("Main Downsampling")
+  # analyze_downsampling()
 }
 
 if (!interactive()) {
