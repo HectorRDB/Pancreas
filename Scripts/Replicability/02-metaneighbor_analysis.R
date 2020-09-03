@@ -192,7 +192,7 @@ main <- function() {
   # analyze_single_merge()
   print("single All Dunes")
   # analyze_Dunes()
-  analyze_Dunes_NMI
+  analyze_Dunes_NMI()
   # print("Main Garbage")
   # analyze_Garbage()
   # print("Main Downsampling")
